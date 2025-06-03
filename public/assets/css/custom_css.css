@@ -1,0 +1,193 @@
+.register{
+    height: 100vh;
+}
+.bg_login {
+    background-color: #1C1D21;
+}
+.login-bg {
+    background-color: #1C1D21;
+}
+.login-bg .form-control {
+    background: rgb(255 255 255 / 1%);
+    border: none;
+    border-bottom: 2px solid #77777A;
+    border-radius: 0px;
+}
+.login-bg button {
+    background-color: #F15056;
+    border: none;
+}
+
+.login_detail_main{
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    height: 100%;
+}
+
+.login_detail_left{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 30px;
+}
+
+.login_detail_right{
+    background: url(../default_image/banner/login_image.png),#F15056;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.login-title{
+    position: absolute;
+    top: 120px;
+    left: 70%;
+    transform: translate(-70%, 0);
+    color: #fff;
+    width: 500px;
+}
+.login-title h2{
+    font-size: 65px;
+    font-weight: 500;
+    line-height: 65px;
+    margin-bottom: 10px;
+}
+.login-title h2 span{
+    font-weight: 700;
+}
+.login-title p{
+    font-size: 16px;
+    margin: 0;
+}
+.login-bg .btn:hover {
+    color: var(--bs-btn-hover-color);
+    background-color: #f47378;
+    border-color: #f15056;
+}
+a.forgot-password {
+    color: #FFFFFF80;
+    font-size: 12px;
+}
+
+.login-bg .btn-primary:focus,
+  .btn-primary:active {
+    background-color: #F15056;
+    border: none;
+}
+.addbutton {
+    text-align: center;
+    margin-bottom: 15px;
+}
+.addbutton a {
+    border: 2px solid #F39C12;
+    background-color: #F39C12;
+    color: #FFFFFF;
+}
+
+.addbutton a:hover{
+    border: 2px solid #f7bb5b;
+    background-color: #f7bb5b;
+    color: #FFFFFF;
+}
+section.show-section {
+    background-color: #ffff;
+}
+
+.store-form h5 {
+    font-weight: bold;
+    padding-top: 6px;
+}
+.store-form i {
+    font-size: 22px;
+}
+
+.store-form {
+    background-color: #fff;
+    padding: 15px;
+}
+
+label.form-label {
+    font-size: 13px;
+    font-weight: 700;
+}
+.show-section i {
+    color: #495057;
+    border: none !important;
+}
+
+.show-section i:hover {
+    color: #495057;
+    border: none;
+}
+
+.show-section button {
+    border: none !important;
+}
+.edit-profile-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.warning p {
+    font-size: 13px;
+    font-weight: 600;
+    vertical-align: middle;
+    padding-top: 10px;
+}
+a#category_button_add {
+    background-color: #DD4B39;
+    border: 2px solid #DD4B39;
+    margin-left: 20px;
+}
+
+a#category_button_add:hover {
+    background-color: #db695a;
+    border: 2px solid #cf6a5d;
+    margin-left: 20px;
+}
+span.pending-report {
+    background: #F39C12;
+    color: #fff;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 400;
+}
+span.pending-approved {
+    background: #00A65A;
+    color: #fff;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 400;
+}
+span.pending-rejected {
+    background: #F31212;
+    color: #fff;
+    padding: 3px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 400;
+}
+.department-btn {
+    text-align: right!important;
+}
+    /* Hide "Show _ entries" text */
+    /* div.dataTables_length label {
+        font-size: 0;
+    }
+
+    div.dataTables_length select {
+        font-size: 1rem;
+    } */
+
+    
+    /* div.dataTables_filter label {
+        font-size: 0;
+    }
+
+    div.dataTables_filter input {
+        font-size: 1rem;
+    } */
+
