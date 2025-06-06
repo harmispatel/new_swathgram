@@ -12,7 +12,7 @@ class SubProfileController extends Controller
 {
     public function index(Request $request)
     {
-        $sub_profiles = TestSubprofile::with('department','profile')->orderBy('id','desc')->get();
+        $sub_profiles = TestSubprofile::with('department','profile','tests')->orderBy('id','desc')->get();
         $profiles = TestProfile::orderBy('id','desc')->get();
         $departments = Department::where('is_active',1)->orderBy('id','desc')->get();
 

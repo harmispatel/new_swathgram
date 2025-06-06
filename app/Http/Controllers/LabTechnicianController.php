@@ -35,7 +35,7 @@ class LabTechnicianController extends Controller
             'address' => 'required',
             'state' => 'required',
             'pincode' => 'required|max:6',
-            'username' => 'required',
+            'username' => 'required|unique:lab_technicians,name',
             'city' => 'required',
             'photo' => 'required',
             'organization_type' => 'required',
@@ -100,12 +100,12 @@ class LabTechnicianController extends Controller
         $lab_technician->dob = $request->dob;
         $lab_technician->save();  
         
-        User::create([
-        'username'=>$request->username,
-        'email'=>$request->email,
-        'password'=>Hash::make($request->password),
-        'role'=>$role,
-        ]);
+        // User::create([
+        // 'username'=>$request->username,
+        // 'email'=>$request->email,
+        // 'password'=>Hash::make($request->password),
+        // 'role'=>$role,
+        // ]);
 
         return redirect()->route('lab_technician')->with('success', 'Lab Technician created successfully.'); 
     }
@@ -128,7 +128,7 @@ class LabTechnicianController extends Controller
             'address' => 'required',
             'state' => 'required',
             'pincode' => 'required|max:6',
-            'username' => 'required',
+            'username' => ['required',Rule::unique('lab_technicians')->ignore(decrypt($request->lab_technician_id)),],
             'city' => 'required',
             'dob' => 'required',
         ]);

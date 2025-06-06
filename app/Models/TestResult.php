@@ -10,4 +10,9 @@ class TestResult extends Model
     {
         return $this->belongsTo(Test::class);
     }
+
+    public function report()
+    {
+        return $this->belongsTo(Report::class);
+    }
 }

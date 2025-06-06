@@ -12,7 +12,8 @@
 
         <link href="assets/img/favicon.png" rel="icon">
         <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        
         @include('super_admin.layouts.admin-css')
         @yield('custom-css')
     </head>

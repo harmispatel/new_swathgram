@@ -413,7 +413,7 @@
             if (orgId) {
                 $.ajax({
                     type: 'POST',
-                    url: "{{ route('organization.devices') }}",
+                    url: "{{ route('lab.organization.devices') }}",
                     data: {
                         "_token": "{{ csrf_token() }}",
                         'organization_id': orgId,

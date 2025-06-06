@@ -56,7 +56,11 @@
                     @foreach ($departments as $department)
                         <tr>
                             <td>{{ $department->department_name }}</td>
-                            <td><i class="bi bi-eye"></i></td>
+                            <td>
+                                <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#modal-{{ $department->id }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
                             @if ($department->is_active == 2)
                                 <td><span class="pending-rejected ps-1">Not Active</span></td>
                             @else
@@ -66,16 +70,42 @@
                                 <a href="{{ route('department', ['edit_id' => encrypt($department->id)]) }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                
                                 <a onclick="deleteLabTechnician('{{ encrypt($department->id) }}')" class="ps-2">
                                     <i class="bi bi-trash3"></i>
                                 </a>
                             </td>
                         </tr>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-{{ $department->id }}" tabindex="-1" aria-labelledby="modalLabel-{{ $department->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel-{{ $department->id }}">Tests in {{ $department->department_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if($department->tests->count())
+                                            <ul>
+                                                @foreach($department->tests as $test)
+                                                    <li>{{ $test->test_name }} (Code: {{ $test->test_code }})</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <p>No tests available in this department.</p>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
             </table>
         </div>
+
     </div>
 </section>
 @endsection

@@ -41,7 +41,6 @@ class AuthController extends Controller
             }
         }
         return back()->with('error', 'Please Enter Valid Email & Password');
-       
     }
 
     public function logout()

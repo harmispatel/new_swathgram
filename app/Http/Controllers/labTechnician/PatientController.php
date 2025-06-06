@@ -62,7 +62,7 @@ class PatientController extends Controller
         $validated = $request->validate([
             'camp_name' => 'required',
             'email' => 'required|email|unique:patients,email',
-            'username' => 'required',
+            'username' => 'required|unique:patients,username',
             'identity_proof_type' => 'required',
             'identity_proof_number' => 'required',
             'age' => 'required',

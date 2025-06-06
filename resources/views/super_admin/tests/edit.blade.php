@@ -85,8 +85,8 @@
                             <label class="form-label">Manual /Machine <span class="text-danger">*</span></label>
                             <select name="manual_machine" class="form-control {{ $errors->has('manual_machine') ? 'is-invalid' : '' }}">
                                 <option value="">Select Result Mode</option>
-                                <option value="manual"> Manual </option>
-                                <option value="machine"> Machine </option>
+                                <option value="manual" {{ $test->manual_machine == "manual" ? 'selected' : '' }}> Manual </option>
+                                <option value="machine" {{ $test->manual_machine == "machine" ? 'selected' : '' }}> Machine </option>
                             </select>
                             @if($errors->has('manual_machine'))
                                 <div class="invalid-feedback">

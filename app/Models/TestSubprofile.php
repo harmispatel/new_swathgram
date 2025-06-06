@@ -17,4 +17,9 @@ class TestSubprofile extends Model
     {
         return $this->belongsTo(TestProfile::class, 'profile_id', 'id');
     }
+
+    public function tests()
+    {
+        return $this->hasMany(Test::class, 'sub_profile_id', 'id');
+    }
 }

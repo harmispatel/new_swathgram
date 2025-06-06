@@ -31,6 +31,7 @@ class PathologistController extends Controller
         
         $validated = $request->validate([
             'name' => 'required',
+            'username' => 'required|unique:pathologists,username',
             'email' => 'required|email|unique:pathologists,email',
             'password' => 'required',
             'confirm_password' => 'required|same:password',
@@ -38,7 +39,6 @@ class PathologistController extends Controller
             'address' => 'required',
             'state' => 'required',
             'pincode' => 'required|max:6',
-            'username' => 'required',
             'city' => 'required',
             'photo' => 'required',
             // 'organization_type' => 'required',
@@ -114,7 +114,7 @@ class PathologistController extends Controller
             'address' => 'required',
             'state' => 'required',
             'pincode' => 'required|max:6',
-            'username' => 'required',
+            'username' => ['required',Rule::unique('pathologists')->ignore(decrypt($request->pathologist_id)),],
             'city' => 'required',
             'dob' => 'required'
         ]);

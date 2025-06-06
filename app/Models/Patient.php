@@ -10,6 +10,8 @@ class Patient extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
 
+   protected $guarded = [];
+
     public function organizations()
     {
         return $this->belongsTo(Organization::class, 'organization_id', 'id');

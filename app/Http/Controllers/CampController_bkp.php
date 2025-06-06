@@ -29,7 +29,7 @@ class CampController extends Controller
         return view('super_admin.camp.create',compact('organizations','pathologists','lab_technicians','packages'));
     }
 
-    public function getDevices(Request $request)
+    public function findDevices(Request $request)
     {
         $devices = Device::where('organization_id', $request->organization_id)->get(['id', 'device_code']);
         return response()->json($devices);

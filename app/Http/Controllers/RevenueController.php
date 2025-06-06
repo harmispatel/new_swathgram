@@ -83,7 +83,7 @@ class RevenueController extends Controller
             return view('super_admin.revenue.index',compact('reports','totalOurRevenue','groupedReports','organizations','tests'));
 
         } catch (\Throwable $th) {
-               dd($th);
-            }
+            dd($th);
+        }
     }
 }

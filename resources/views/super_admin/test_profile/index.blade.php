@@ -124,14 +124,19 @@
                         <tr>
                             <td>{{ $profile->name }}</td>
                             <td>{{ $profile->department->department_name }}</td>
-                            <td><i class="bi bi-eye"></i></td>
-                            @if ($department->is_active == 2)
+                            <td>
+                                <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#modal-{{ $profile->id }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+
+                            @if ($profile->department->is_active == 2)
                                 <td><span class="pending-rejected ps-1">Not Active</span></td>
                             @else
                                 <td><span class="pending-approved ps-1">Active</span></td>
                             @endif
+
                             <td>
-                              
                                 <a href="{{ route('test.profile', ['edit_id' => encrypt($profile->id)]) }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
@@ -140,9 +145,35 @@
                                 </a>
                             </td>
                         </tr>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-{{ $profile->id }}" tabindex="-1" aria-labelledby="modalLabel-{{ $profile->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel-{{ $profile->id }}">Tests in {{ $profile->department->department_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if($profile->tests->count())
+                                            <ul>
+                                                @foreach($profile->tests as $test)
+                                                    <li>{{ $test->test_name }} (Code: {{ $test->test_code }})</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <p>No tests available in this profile.</p>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
-            </table>
+
         </div>
     </div>
 </section>

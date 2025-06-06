@@ -27,4 +27,9 @@ class Test extends Model
     {
         return $this->belongsTo(Department::class, 'department_id', 'id');
     }
+
+    public function QcReport()
+    {
+        return $this->belongsTo(GenericQualityControl::class,'id','test_id');
+    }
 }

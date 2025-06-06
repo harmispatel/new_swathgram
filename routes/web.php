@@ -25,6 +25,8 @@ use App\Http\Middleware\IsSuperAdmin;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\LoginController;
+use App\Http\Controllers\QcReportController;
+use App\Http\Controllers\SatelliteController;
 
 Route::get('config-clear', function () {
     Artisan::call('cache:clear');
@@ -46,7 +48,7 @@ Route::post('reset-password', [AuthController::class, 'submitResetPasswordForm']
 
 Route::group(['prefix' => 'superadmin'], function ()
 {
-    Route::group(['middleware' => ['is_super_admin','auth']], function ()
+    Route::group(['middleware' => ['auth:web', 'is_super_admin']], function ()
     {
         Route::get('dashboard', [DashboardController::class,'index'])->name('super_admin.dashboard');
     
@@ -122,7 +124,6 @@ Route::group(['prefix' => 'superadmin'], function ()
             Route::get('camp/edit/{id}','edit')->name('camp.edit');
             Route::post('camp/update','update')->name('camp.update');
             Route::post('camp/delete','delete')->name('camp.delete');
-
             Route::post('camp/get-devices', 'getDevices')->name('organization.devices');
         });
 
@@ -135,12 +136,6 @@ Route::group(['prefix' => 'superadmin'], function ()
         Route::get('/my-profile/{id}',[UserController::class,'myProfile'])->name('admin.profile.view');
         Route::get('/edit-profile/{id}',[UserController::class,'editProfile'])->name('admin.profile.edit');
         Route::post('/update-profile',[UserController::class,'updateProfile'])->name('admin.profile.update');
-    
-    
-        Route::controller(PatientController::class)->group(function () {
-            Route::get('patients','index')->name('patient');
-            Route::post('patient/delete','delete')->name('patient.delete');
-        });
 
         Route::controller(PatientReportController::class)->group(function () {
             Route::get('patients/report','index')->name('patient.report');
@@ -183,6 +178,22 @@ Route::group(['prefix' => 'superadmin'], function ()
             Route::get('sub-profile/create','create')->name('test.sub-profile.create');
             Route::post('sub-profile/store','store')->name('test.sub-profile.store');
             Route::post('sub-profile/delete','delete')->name('test.sub-profile.delete');
+        });
+
+        Route::controller(SatelliteController::class)->group(function () {
+            Route::get('satellite-data','index')->name('satellite_data');
+            Route::get('satellite-data/show/{id}','show')->name('satellite_data.show');
+            Route::get('satellite-map-data','TestMapShow')->name('satellite_data.map');
+            // Route::get('lab_technician/create','create')->name('lab_technician.create');
+            // Route::post('lab_technician/store','store')->name('lab_technician.store');
+            // Route::get('lab_technician/edit/{id}','edit')->name('lab_technician.edit');
+            // Route::post('lab_technician/update','update')->name('lab_technician.update');
+            Route::post('satellite-data/delete','delete')->name('satellite_data.delete');
+        });
+
+        Route::controller(QcReportController::class)->group(function () {
+            Route::get('qc-report','index')->name('qc_report');
+            Route::post('qc-report/delete','delete')->name('qc_report.delete');
         });
     });
 });

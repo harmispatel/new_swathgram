@@ -28,7 +28,7 @@ class ManagerController extends Controller
     {
         
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:managers,name',
             'email' => 'required|email|unique:managers,email',
             'password' => 'required',
             'confirm_password' => 'required|same:password',
@@ -97,7 +97,7 @@ class ManagerController extends Controller
             'address' => 'required',
             'state' => 'required',
             'pincode' => 'required|max:6',
-            'username' => 'required',
+            'username' => ['required',Rule::unique('managers')->ignore(decrypt($request->manager_id)),],
             'city' => 'required',
             'organization_type' => 'required',
             'dob' => 'required'

@@ -173,6 +173,10 @@ span.pending-rejected {
 .department-btn {
     text-align: right!important;
 }
+.organization-name label {
+    color: #00bcd4;
+    font-size: 15px;
+}
     /* Hide "Show _ entries" text */
     /* div.dataTables_length label {
         font-size: 0;

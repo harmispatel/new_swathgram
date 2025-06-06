@@ -9,7 +9,7 @@ class DepartmentController extends Controller
 {
     public function index(Request $request)
     {
-        $departments = Department::orderBy('id','desc')->get();
+        $departments = Department::with('tests')->orderBy('id','desc')->get();
         $editDepartment = null;
 
         if ($request->has('edit_id')) {

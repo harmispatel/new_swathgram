@@ -192,19 +192,26 @@
                         <label class="form-label">Apps <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="app_selection[]" type="checkbox" value="0" id="ltApp" {{ in_array('0', $selectedApps) ? 'checked' : '' }}><label class="form-check-label" for="ltApp">LT app</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="app_selection[]" type="checkbox" value="1" id="microscopeApp" {{ in_array('1', $selectedApps) ? 'checked' : '' }}><label class="form-check-label" for="microscopeApp">Microscope app</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" name="app_selection[]" type="checkbox" value="2" id="urineApp" {{ in_array('2', $selectedApps) ? 'checked' : '' }}><label class="form-check-label" for="urineApp">Urine app</label>
-                        </div>
+                        @php
+                            $apps = [
+                                '0' => 'LT app',
+                                '1' => 'Microscope app',
+                                '2' => 'Urine app',
+                            ];
+                        @endphp
+
+                        @foreach ($apps as $value => $label)
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" name="app_selection[]" type="checkbox" value="{{ $value }}" id="app_{{ $value }}"
+                                    {{ in_array((string)$value, $selectedApps ?? []) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="app_{{ $value }}">{{ $label }}</label>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
+
 
         <!-- --------------------------------------------- -->
         <div class="row mt-5">

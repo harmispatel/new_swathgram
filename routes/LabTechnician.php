@@ -20,7 +20,7 @@ Route::group(['prefix' => 'lab_technician'], function ()
             Route::post('camp/update','update')->name('lab_technician.camp.update');
             Route::post('camp/delete','delete')->name('lab_technician.camp.delete');
 
-            Route::post('camp/get-devices', 'getDevices')->name('organization.devices');
+            // Route::post('camp/lab-get-devices', 'getDevices')->name('lab.organization.devices');
         });
 
         Route::controller(PatientController::class)->group(function () {

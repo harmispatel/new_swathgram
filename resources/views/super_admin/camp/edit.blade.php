@@ -122,8 +122,8 @@
 
                     <!-- lab_technician_id -->
                     <div class="col-md-9">
-                         <select name="lab_technician" id="lab_technician" class="form-control {{ $errors->has('lab_technician') ? 'is-invalid' : '' }}">
-                            <option value="">Select Lab 123 Technician</option>
+                         <select name="lab_technician[]" id="lab_technician" class="form-control {{ $errors->has('lab_technician') ? 'is-invalid' : '' }}" multiple>
+                            <option value="">Select Lab Technician</option>
                             @foreach ($lab_technicians as $lab_technician)
                                 <option value="{{ $lab_technician->id }}" 
                                      {{ $camp->labTechnicians->contains('id', $lab_technician->id) ? 'selected' : '' }}>
@@ -407,6 +407,10 @@
 
 @section('custom-js')
 <script>
+    $(document).ready(function() {
+        $('#lab_technician').select2();
+    });
+
     $(document).ready(function () {
         $('#organization_type').change(function () {
             let orgId = $(this).val();

@@ -8,6 +8,10 @@ class Organization extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'app_selection' => 'array',
+    ];
+
     public function managers()
     {
         return $this->hasMany(Manager::class, 'organization_id', 'id');

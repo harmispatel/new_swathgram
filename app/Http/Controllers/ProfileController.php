@@ -11,7 +11,7 @@ class ProfileController extends Controller
 {
     public function index(Request $request)
     {
-        $profiles = TestProfile::with('department')->orderBy('id','desc')->get();
+        $profiles = TestProfile::with('department','tests')->orderBy('id','desc')->get();
         $departments = Department::where('is_active',1)->orderBy('id','desc')->get();
 
         $editProfile = null;

@@ -65,7 +65,7 @@ class OrganizationController extends Controller
             $organization->gst_pan_number = $request->gst_pan_number;
             $organization->org_logo = $org_logo;
             $organization->premium = $request->premium;
-            $organization->app_selection = isset($request->app_selection) ? json_encode($request->app_selection) : null;
+            $organization->app_selection = $request->app_selection ?? [];
             $organization->revenue_type = $request->revenue_type;
             $organization->revenue_share = $request->revenue_share;
             $organization->org_cin = $request->org_cin ?? null;
@@ -80,7 +80,8 @@ class OrganizationController extends Controller
     public function edit($id)
     {
         $organization = Organization::find(decrypt($id));
-        $selectedApps = json_decode($organization->app_selection, true) ?? [];
+        // $selectedApps = json_decode($organization->app_selection, true) ?? [];
+        $selectedApps = $organization->app_selection ?? [];
         return view('super_admin.organization.edit',compact('organization','selectedApps'));
     }
 
@@ -135,7 +136,7 @@ class OrganizationController extends Controller
             $organization->otp_authentication = $request->otp_authentication;
             $organization->gst_pan_number = $request->gst_pan_number;
             $organization->premium = $request->premium;
-            $organization->app_selection = isset($request->app_selection) ? json_encode($request->app_selection) : null;
+            $organization->app_selection = $request->app_selection ?? [];
             $organization->revenue_type = $request->revenue_type;
             $organization->revenue_share = $request->revenue_share;
             $organization->org_cin = $request->org_cin ?? null;

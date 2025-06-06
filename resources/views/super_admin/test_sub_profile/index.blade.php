@@ -130,7 +130,7 @@
         </div>
 
 
-        <div class="row">
+        <!-- <div class="row">
             <table id="profile_table" class="table table-striped pt-2">
                 <thead>
                     <tr>
@@ -167,7 +167,75 @@
                     @endforeach
                 </tbody>
             </table>
+        </div> -->
+        <div class="row">
+            <table id="profile_table" class="table table-striped pt-2">
+                <thead>
+                    <tr>
+                        <th>Sub Profile name</th>
+                        <th>Profile name</th>
+                        <th>Department</th>
+                        <th>View Test</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($sub_profiles as $sub_profile)
+                        <tr>
+                            <td>{{ $sub_profile->name }}</td>
+                            <td>{{ $sub_profile->profile->name }}</td>
+                            <td>{{ $sub_profile->department->department_name }}</td>
+                            <td>
+                                <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#modal-{{ $sub_profile->id }}">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </td>
+                            @if ($sub_profile->department->is_active == 2)
+                                <td><span class="pending-rejected ps-1">Not Active</span></td>
+                            @else
+                                <td><span class="pending-approved ps-1">Active</span></td>
+                            @endif
+                            <td>
+                                <a href="{{ route('test.sub-profile', ['edit_id' => encrypt($sub_profile->id)]) }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a onclick="deleteSubProfile('{{ encrypt($sub_profile->id) }}')" class="ps-2">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="modal-{{ $sub_profile->id }}" tabindex="-1" aria-labelledby="modalLabel-{{ $sub_profile->id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabel-{{ $sub_profile->id }}">Tests in {{ $sub_profile->name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @if($sub_profile->tests->count())
+                                            <ul>
+                                                @foreach($sub_profile->tests as $test)
+                                                    <li>{{ $test->test_name }} (Code: {{ $test->test_code }})</li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <p>No tests available in this sub profile.</p>
+                                        @endif
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
+
     </div>
 </section>
 

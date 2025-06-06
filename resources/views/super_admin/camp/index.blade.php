@@ -77,8 +77,10 @@
                 $.ajax({
                     type: "POST",
                     url: '{{ route("camp.delete") }}',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     data: {
-                        "_token": "{{ csrf_token() }}",
                         'id': campId,
                     },
                     dataType: 'JSON',

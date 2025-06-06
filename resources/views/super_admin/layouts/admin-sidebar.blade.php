@@ -107,6 +107,13 @@
         </li>
 
         <li class="nav-item">
+            <a class="nav-link {{ ($routeName == 'qc_report') ? 'active-tab' : '' }}" href="{{ route('qc_report') }}">
+                <i class="bi bi-cash-coin {{ ($routeName == 'qc_report') ? 'icon-tab' : '' }}"></i>
+                <span>QC Report</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link {{ ($routeName == 'test') || ($routeName == 'test.create') || ($routeName == 'department') || ($routeName == 'department.create') || ($routeName == 'test.profile') || ($routeName == 'test.profile.create') || ($routeName == 'test.sub-profile') || ($routeName == 'test.sub-profile.create') ? 'active-tab' : '' }}" href="{{ route('test') }}">
                 <i class="bi bi-cash-coin {{ ($routeName == 'test') || ($routeName == 'test.create') || ($routeName == 'department') || ($routeName == 'department.create') || ($routeName == 'test.profile') || ($routeName == 'test.profile.create') || ($routeName == 'test.sub-profile') || ($routeName == 'test.sub-profile.create') ? 'icon-tab' : '' }}"></i>
                 <span>Tests</span>
@@ -135,6 +142,13 @@
                     </a>
                 </li>
             </ul>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link {{ ($routeName == 'satellite_data') || ($routeName == 'satellite_data.show') || ($routeName == 'satellite_data.map') ? 'active-tab' : '' }}" href="{{ route('satellite_data') }}">
+                <i class="bi bi-cash-coin {{ ($routeName == 'satellite_data') || ($routeName == 'satellite_data.show') || ($routeName == 'satellite_data.map') ? 'icon-tab' : '' }}"></i>
+                <span>Satellite Data</span>
+            </a>
         </li>
     </ul>
 </aside>

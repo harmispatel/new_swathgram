@@ -2,6 +2,7 @@
 /node_modules
 /public/build
 /public/hot
+/public/super_admin_uploads
 /public/storage
 /storage/*.key
 /storage/pail

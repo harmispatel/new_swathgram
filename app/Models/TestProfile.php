@@ -17,4 +17,9 @@ class TestProfile extends Model
     {
         return $this->hasMany(TestProfile::class, 'profile_id', 'id');
     }
+
+    public function tests()
+    {
+        return $this->hasMany(Test::class, 'profile_id', 'id');
+    }
 }

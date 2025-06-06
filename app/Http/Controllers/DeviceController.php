@@ -6,6 +6,7 @@ use App\Models\Device;
 use App\Models\DeviceCatalog;
 use App\Models\Organization;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DeviceController extends Controller
 {
@@ -36,9 +37,9 @@ class DeviceController extends Controller
     {
         $validated = $request->validate([
             'device_name' => 'required',
-            'device_code' => 'required',
+            'device_code' => 'required|unique:devices,device_code',
             'device_detail' => 'required',
-            'device_serial' => 'required',
+            'device_serial' => 'required|unique:devices,device_serial',    
             'organization_type' => 'required',
         ]);
 
@@ -68,7 +69,7 @@ class DeviceController extends Controller
     {
         $validated = $request->validate([
             'device_name' => 'required',
-            'device_code' => 'required',
+            'device_code' => Rule::unique('devices', 'device_code')->ignore(decrypt($request->device_id)),
             'device_detail' => 'required',
             'device_serial' => 'required',
             'organization_type' => 'required',

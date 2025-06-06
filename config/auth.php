@@ -45,9 +45,15 @@ return [
             'driver' => 'session',
             'provider' => 'lab_technicians',
         ],
+
+        // 'api_lab_technician' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'lab_technicians',
+        // ],
+        
         'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
+            'driver' => 'sanctum',
+            'provider' => 'lab_technicians',
         ],
     ],
 
@@ -107,6 +113,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_resets'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'lab_technicians' => [
+            'provider' => 'lab_technicians',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_resets'),
             'expire' => 60,
             'throttle' => 60,

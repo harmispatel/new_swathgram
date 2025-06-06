@@ -290,6 +290,7 @@
 <script>
     $(document).ready(function () {
        $('#test_list').select2();
+       $('#test_list').prop('disabled', true); // Initially disabled
     });
 
     $('#profile').on('change', function () {
@@ -311,6 +312,8 @@
                             $.each(response.data, function (index, test) {
                                 $('#test_list').append(`<option value="${test.id}" selected>${test.test_name}</option>`);
                             });
+
+                            $('#test_list').prop('disabled', true);
                         }
                     },
                     error: function () {

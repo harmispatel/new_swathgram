@@ -18,8 +18,8 @@ class Department extends Model
         return $this->hasOne(TestSubprofile::class, 'department_id', 'id');
     }
 
-    public function test()
+    public function tests()
     {
-        return $this->hasOne(Test::class, 'department_id', 'id');
+        return $this->hasMany(Test::class, 'department_id', 'id');
     }
 }

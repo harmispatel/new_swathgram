@@ -442,7 +442,8 @@
                 const width = img.naturalWidth;
                 const height = img.naturalHeight;
                     // 400 x 97
-                if (width === 402 && height === 82) {
+                // if (width === 402 && height === 82) {
+                if (width === 400 && height === 80) {
                     $('#preview_report_header_image').attr('src', objectUrl);
                 } else {
                     alert("Image must be exactly 2488px wide and between 450px to 600px tall.");
@@ -471,7 +472,8 @@
                 const height = img.naturalHeight;
 
                 // 400 x 73
-                if (width === 402 && height === 82) {
+                // if (width === 402 && height === 82) {
+                if (width === 402 && height === 51) {
                     $('#preview_report_footer_image').attr('src', objectUrl);
                 } else {
                     alert("Footer image must be exactly 2488px wide and between 450px to 600px tall.");
