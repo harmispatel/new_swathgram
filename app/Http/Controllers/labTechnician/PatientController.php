@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\labTechnician;
 
 use App\Models\Camp;
+use App\Models\LabTechnician;
 use App\Models\Organization;
 use App\Models\Package;
 use App\Models\PackageTest;
@@ -11,8 +12,10 @@ use App\Models\Report;
 use App\Models\Test;
 use App\Models\TestProfile;
 use App\Models\TestResult;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class PatientController extends Controller
 {
@@ -77,7 +80,15 @@ class PatientController extends Controller
             'refrance_by' => 'nullable|string'
         ]);
 
-        $user = Auth::guard('lab_technician')->user();
+        $user = User::create([
+            'username'=>$request->username,
+            'email'=>$request->email,
+            'password'=>Hash::make(123456),
+            'role'=>4,
+        ]);
+
+        $user = Auth::user()->id;
+        $lab_tech = LabTechnician::where('user_id',$user->id)->first();
 
         $patient = new Patient();
         $patient->user_id = $user->id;
@@ -90,8 +101,8 @@ class PatientController extends Controller
         $patient->mobile_number = $request->mobile_number;
         $patient->address = $request->address;
         $patient->medical_history = $request->medical_history;
-        $patient->organization_id = $user->organization_id;
-        $patient->identity_proof_number = $user->identity_proof_number;
+        $patient->organization_id = $lab_tech->organization_id;
+        $patient->identity_proof_number = $lab_tech->identity_proof_number;
         $patient->camp_id = $request->camp_name ?? null;
         $patient->patient_code = '#' . random_int(2000000000,2000000000);
         $patient->save();

@@ -4,7 +4,7 @@
 
 <section class="section show-section patients mt-3">
     <div class="container">
-        <form id="sort_blogs" action="{{ route('patient.report') }}" method="GET">
+        <form id="sort_blogs" action="{{ route('qc_report') }}" method="GET">
             <div class="row">
                 {{-- Organization --}}
                 <div class="col-md-4 mt-3">

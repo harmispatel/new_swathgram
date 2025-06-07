@@ -67,7 +67,7 @@ class LoginController extends BaseController
     }
 
     
-     public function ResetPasswordForm(Request $request)
+    public function ResetPasswordForm(Request $request)
     {
 
         $status = Password::broker('lab_technicians')->reset(
@@ -99,19 +99,16 @@ class LoginController extends BaseController
         return $this->sendResponse(null, 'User logged out successfully.', true);
     }
 
-   
-   public function get(){
-
-        $labtechnician = Auth::guard('api')->user();
-        if(!$labtechnician ){
-             return $this->sendResponse(null, 'Unauthorized.', false);
-        }
-        return $this->sendResponse([
-                        'user' => new loginResource($labtechnician),
-                    ],  'Data get successful.', true);
-   }
-   
-   
+    public function get()
+    {
+            $labtechnician = Auth::guard('api')->user();
+            if(!$labtechnician ){
+                return $this->sendResponse(null, 'Unauthorized.', false);
+            }
+            return $this->sendResponse([
+                            'user' => new loginResource($labtechnician),
+                        ],  'Data get successful.', true);
+    }
    
     public function profileupdate(request $request)
     {
@@ -144,8 +141,8 @@ class LoginController extends BaseController
             ], 'Profile updated successfully.', true);
     }
 
-     public function changePassword(Request $request)
-     {
+    public function changePassword(Request $request)
+    {
         $request->validate([
             'old_password' => 'required',
             'new_password' => 'required|min:6',
@@ -163,7 +160,5 @@ class LoginController extends BaseController
         ]);
           return $this->sendResponse(true,'Password updated successfully');
     }
-
-
 
 }

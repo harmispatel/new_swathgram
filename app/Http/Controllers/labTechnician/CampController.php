@@ -16,8 +16,9 @@ class CampController extends Controller
 {
     public function index()
     {
-        $labTech = Auth::guard('lab_technician')->user();
-        $labTechnicianId = $labTech->id;
+        $user = Auth::user()->id;
+        $lab_technician = LabTechnician::where('user_id',$user->id)->first();
+        $labTechnicianId = $lab_technician->user_id;
 
         $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])
         ->whereHas('labTechnicians',function ($query) use ($labTechnicianId){

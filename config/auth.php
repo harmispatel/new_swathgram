@@ -46,10 +46,10 @@ return [
             'provider' => 'lab_technicians',
         ],
 
-        // 'api_lab_technician' => [
-        //     'driver' => 'sanctum',
-        //     'provider' => 'lab_technicians',
-        // ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
         
         'api' => [
             'driver' => 'sanctum',

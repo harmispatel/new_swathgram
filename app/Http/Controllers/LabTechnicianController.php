@@ -78,10 +78,16 @@ class LabTechnicianController extends Controller
             $license = $imageName;
         }
 
-        $role='lab_technician';
+        $user = User::create([
+            'username'=>$request->username,
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+            'role'=>5,
+        ]);
+
 
         $lab_technician = new LabTechnician();
-        $lab_technician->user_id = Auth::user()->id;
+        $lab_technician->user_id = $user->id;
         $lab_technician->organization_id = $request->organization_type;
         $lab_technician->name = $request->name;
         $lab_technician->email = $request->email;
@@ -100,12 +106,7 @@ class LabTechnicianController extends Controller
         $lab_technician->dob = $request->dob;
         $lab_technician->save();  
         
-        // User::create([
-        // 'username'=>$request->username,
-        // 'email'=>$request->email,
-        // 'password'=>Hash::make($request->password),
-        // 'role'=>$role,
-        // ]);
+        
 
         return redirect()->route('lab_technician')->with('success', 'Lab Technician created successfully.'); 
     }
@@ -163,6 +164,10 @@ class LabTechnicianController extends Controller
             $lab_technician->license = $imageName;
         }
 
+        $user = User::find($lab_technician->user_id);
+        $user->username = $request->username;
+        $user->email = $request->email;
+
         if ($request->filled('password')) {
             $request->validate([
                 'password' => 'required|min:6',
@@ -171,10 +176,10 @@ class LabTechnicianController extends Controller
 
             $lab_technician->password = Hash::make($request->password);
             $lab_technician->re_password = Hash::make($request->password);
+            $user->password = Hash::make($request->password);
         }
-
+        $user->save();
        
-        $lab_technician->user_id = Auth::user()->id;
         $lab_technician->name = $request->name;
         $lab_technician->organization_id = $request->organization_type;
         $lab_technician->email = $request->email;

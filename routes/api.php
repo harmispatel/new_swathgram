@@ -27,8 +27,14 @@ use App\Http\Controllers\api\CustomController;
      Route::post('/getTestsByProfile',[CustomController::class,'getTestsByProfile'])->name('getTestsByProfile');
      Route::post('/PatientCreate',[CustomController::class,'PatientCreate'])->middleware('auth:sanctum');
 
+     Route::post('/patientlist',[CustomController::class,'patientlist'])->middleware('auth:sanctum');
 
     Route::post('/changePassword', [LoginController::class, 'changePassword'])->middleware('auth:sanctum');
+    Route::post('/campaList',[CustomController::class,'camplist'])->middleware('auth:sanctum');
+    Route::post('/packageList',[CustomController::class,'packagelist'])->middleware('auth:sanctum');
+    Route::post('/search',[CustomController::class,'searchpatient']);
+
+        Route::post('/qcdata',[CustomController::class,'qcdata']);
 
 
 

@@ -65,7 +65,7 @@
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-3">
-                        <label class="form-label">UID <span class="text-danger">*</span></label>
+                        <label class="form-label">Lab ID/UID <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
                         <input type="text" name="device_code" value="{{ $device->device_code }}" class="form-control {{ $errors->has('device_code') ? 'is-invalid' : '' }}" placeholder="LAB9999AHXXXX">

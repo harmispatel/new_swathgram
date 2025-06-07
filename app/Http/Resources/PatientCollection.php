@@ -22,13 +22,30 @@ class PatientCollection extends ResourceCollection
                 $patient_id = $data->id;
                 $report = Report::where('patient_id',$patient_id)->with('patient','organization','testResults')->orderBy('id','desc')->get();
                 
+                $testNames = [];
+                $totalValue = 0;
+                foreach ($data->reports as $report) {
+                    foreach ($report->testResults as $testResult) {
+                        if ($testResult->test) {
+                            $testNames[] = $testResult->test->test_name;
+                        }
+                    }
+
+                    if (is_numeric($testResult->value)) {
+                        $totalValue += $testResult->value;
+                    }
+                }
+               
 
                 return [
                     'id'=>(int) $data->id,
                     'patient_name' => $data->username,  
+                    'tests' => implode(', ', array_unique($testNames)),
                     'age'=>$data->age,
+                    'cost' => $totalValue
                 ];
-            })
+            })    
+    
         ];
     }
 

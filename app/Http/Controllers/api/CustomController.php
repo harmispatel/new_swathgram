@@ -17,6 +17,13 @@ use App\Models\PackageTest;
 use App\Models\TestResult;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\CamplistResource;
+use App\Http\Resources\PackageListResource;
+use App\Models\GenericQualityControl;
+use App\Models\Device;
+use Carbon\Carbon;
+
+use App\Http\Resources\QcDataResource;
 
 
 class CustomController extends BaseController
@@ -47,8 +54,6 @@ class CustomController extends BaseController
 
         return $this->sendResponse($profiles, 'Tests Get Successfully', true);
     }
-
-     
 
     public function PatientCreate(Request $request)
     {
@@ -118,50 +123,22 @@ class CustomController extends BaseController
         }
     }
 
-
-    // public function patientlist(request $request)
-    // {
-
-    //     //     $report=Report::get();
-
-
-    //     //    $testResults = TestResult::with(['report.patient', 'test'])
-    //     //    ->where('report_id',$report->patient_id)
-    //     //    ->get();
-
-    //    $reports = Patient::all(); 
-
-    //     $reportIds = $reports->pluck('id'); 
-
-    //     $testResults = TestResult::with(['report.patient', 'test'])
-    //         ->whereIn('patient_id', $reportIds) 
-    //         ->get();
-
-    //     return $this->sendResponse($testResults, 'Patient List Successful', true);
-
-
-        
-    // }
-
-    public function patientlist(request $request)
+    public function patientlist(Request $request)
     {
-        // $reports = Patient::all(); 
-        // $reportIds = $reports->pluck('id'); 
-        // $testResults = TestResult::with(['report.patient', 'test'])
-        //     ->whereIn('patient_id', $reportIds) 
-        //     ->get();
+        try {
 
-        // return $this->sendResponse($testResults, 'Patient List Successful', true);
-
-        $patints = Patient::orderBy('id','desc')->get();
-        $tests = Test::where('is_active',1)->orderBy('id','desc')->get();
-
-        return new PatientCollection($patints,$tests);
+            $patients = Patient::with('camp', 'reports.testResults.test')->orderBy('id','desc')->get();
+            return new PatientCollection($patients);
+        } 
+        catch (\Throwable $th) 
+        {
+            dd($th);
+            return redirect()->back()->with('error', 'Something went wrong!');
+        }
     }
 
     public function changePassword(Request $request)
     {
-        dd('hello');
         $request->validate([
             'old_password' => 'required',
             'new_password' => 'required|min:6',
@@ -180,6 +157,66 @@ class CustomController extends BaseController
           return $this->sendResponse(true,'Password updated successfully');
     }
 
-   
+    public function camplist(request $request)
+    {
+            $technicianId = Auth::id();
+            $camps = Camp::whereRelation('labTechnicians', 'lab_technicians.id', $technicianId)
+                            ->get();
 
+            return $this->sendResponse([
+                'camplist' => CamplistResource::collection($camps),
+            ], 'camp list successfully.', true);
+
+    }
+
+    public function packagelist(request $request)
+    {
+
+        $packages=Package::get();
+        return $this->sendResponse([
+                'camplist' => PackageListResource::collection($packages),
+            ], 'camp list successfully.', true);
+
+    }
+
+
+    public function searchpatient(Request $request)
+    {
+        $query = Patient::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where(function($q) use ($search) {
+                $q->where('mobile_number', 'like', '%' . $search . '%')
+                ->orWhere('identity_proof_type', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
+            });
+        }
+
+        $patients = $query->get(['id', 'username']);
+
+        return $this->sendResponse([
+            'camplist' => $patients,
+        ], 'Patient list fetched successfully.', true);
+    }
+
+
+    public function qcdata(request $request){
+
+        // $device=Device::get();
+
+        // $qcdata= GenericQualityControl::with('test')->get();
+        
+            $qcdata = QcDataResource::collection(
+               GenericQualityControl::with('test')->get()
+            );
+
+
+        return $this->sendResponse([
+            'qcdata' =>$qcdata,
+        ], 'Qc list fetched successfully.', true);
+
+    }
+    
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\LabTechnician;
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -51,8 +52,16 @@ class OrganizationController extends Controller
                 $org_logo = $imageName;
             }
 
+            $user = User::create([
+                'username'=>$request->username,
+                'email'=>$request->email,
+                'password'=>Hash::make($request->password),
+                'role'=>2,
+            ]);
+
+
             $organization = new Organization();
-            $organization->user_id = Auth::user()->id;
+            $organization->user_id = $user->id;
             $organization->organization_name = $request->organization_name;
             $organization->owner_name = $request->owner_name;
             $organization->email = $request->email;
@@ -115,15 +124,19 @@ class OrganizationController extends Controller
                 $organization->org_logo = $imageName;
             }
 
-            
+
+            $user = User::find($organization->user_id);
+            $user->username = $request->username;
+            $user->email = $request->email;
+
             if ($request->filled('password')) {
                 $request->validate([
                     'password' => 'required|min:6',
                 ]);
-
+                $user->password = Hash::make($request->password);
                 $organization->password = Hash::make($request->password);
             }
-
+            $user->save();
             
             $organization->user_id = Auth::user()->id;
             $organization->organization_name = $request->organization_name;

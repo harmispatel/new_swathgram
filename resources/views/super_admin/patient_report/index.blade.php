@@ -152,6 +152,7 @@
             <table id="lt_patient_table" class="table table-striped pt-2">
                 <thead>
                     <tr>
+                        <th>id</th>
                         <th>Patient Name</th>
                         <th>Contact</th>
                         <th>Age</th>
@@ -166,6 +167,7 @@
                 <tbody>
                     @foreach ($patients as $patient)
                         <tr>
+                            <td>{{ $patient->id }}</td>
                             <td>{{ $patient->username }}</td>
                             <td>{{ $patient->mobile_number }}</td>
                             <td>{{ $patient->age }}</td>
@@ -182,7 +184,7 @@
                                     echo implode(', ', array_unique($testNames));
                                 @endphp
                             </td>
-                            <td>{{ $patient->camp->camp_name }}</td>
+                            <td>{{ $patient->camp->camp_name ?? '' }}</td>
                             <td>
                                 @php
                                     $totalAmount = 0;
@@ -195,14 +197,14 @@
                                 {{ number_format($totalAmount, 2) }}
                             </td>
                             <td>{{ $patient->created_at->format('d-m-Y H:i') }}</td>
-                            @if ($patient->reports->last()->status == "draft")
+                            {{-- @if ($patient->reports->last()->status == "draft")
                                 <td><span class="pending-report">Pending</span></td>
                             @elseif ($patient->reports->last()->status == "approved")
                                  <td><span class="pending-approved">Approved</span></td>
                             @else
                                 <td><span class="pending-rejected">Rejected</span></td>
-                            @endif
-                            
+                            @endif --}}
+                            <td></td>
                             <td>
                                 <a onclick="deletePatient('{{ encrypt($patient->id) }}')" class="ps-2">
                                     <i class="bi bi-trash3"></i>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Organization;
 use App\Models\Pathologist;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -74,8 +75,15 @@ class PathologistController extends Controller
             $license = $imageName;
         }
 
+        $user = User::create([
+            'username'=>$request->username,
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+            'role'=>3,
+        ]);
+
         $pathologist = new Pathologist();
-        $pathologist->user_id = Auth::user()->id;
+        $pathologist->user_id = $user->id;
         $pathologist->name = $request->name;
         $pathologist->email = $request->email;
         $pathologist->password = Hash::make($request->password);
@@ -142,7 +150,12 @@ class PathologistController extends Controller
             $pathologist->license = $imageName;
         }
 
-         if ($request->filled('password')) {
+        $user = User::find($pathologist->user_id);
+        $user->username = $request->username;
+        $user->email = $request->email;
+
+
+        if ($request->filled('password')) {
             $request->validate([
                 'password' => 'required|min:6',
                 'confirm_password' => 'required|same:password',
@@ -150,10 +163,11 @@ class PathologistController extends Controller
 
             $pathologist->password = Hash::make($request->password);
             $pathologist->re_password = Hash::make($request->password);
-        }
 
-       
-        $pathologist->user_id = Auth::user()->id;
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+
         $pathologist->name = $request->name;
         $pathologist->email = $request->email;
         $pathologist->contact = $request->contact;
