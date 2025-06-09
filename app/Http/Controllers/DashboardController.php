@@ -11,14 +11,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
+     
         $user = Auth::user();
-        if ($user && $user->role === 'super_admin') {
+        
+        if ($user && $user->role == 1) {
             return view('super_admin.dashboard', compact('user'));
-        }
-
-        $lab_technician = LabTechnician::where('user_id',$user->id)->first();
-        if ($lab_technician) {
-            return view('lab_technician.dashboard', compact('lab_technician'));
+        }elseif($user && $user->role == 5){
+            return view('lab_technician.dashboard', compact('user'));
+        }elseif($user && $user->role == 2){
+            return view('admin.dashboard', compact('user'));
         }
     }
+    
 }

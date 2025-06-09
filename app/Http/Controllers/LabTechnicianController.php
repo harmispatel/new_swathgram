@@ -82,6 +82,7 @@ class LabTechnicianController extends Controller
             'username'=>$request->username,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
+            'phone'=>$request->contact,
             'role'=>5,
         ]);
 

@@ -16,17 +16,12 @@ class LoginResource extends JsonResource
     {
          return [
             'id'    => $this->id,
-            'name'  => $this->name ?? null,
             'email' => $this->email ?? null,
             'username' => $this->username??null,
-            'gender' => $this->gender ?? null,
-            'dob' => $this->dob ?? null,
-            'contact' => $this->contact ?? null,
-            'state' => $this->state ?? null,
-            'city' => $this->city ?? null,
-            'address' => $this->address ?? null,
-            'pincode' => $this->pincode ?? null,
+            'phone' => $this->contact ?? null,
             'photo' => $this->photo ?? null,
+            'address'=> $this->address ?? null,
+            'remember' => $this->remember ?? null
         ];
     }
 }

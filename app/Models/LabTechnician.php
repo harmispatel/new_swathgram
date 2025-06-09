@@ -5,10 +5,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use App\Models\User; 
 
 class LabTechnician extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    // use HasApiTokens, Notifiable;
     
     protected $guarded = [];
     public function organizations()
@@ -26,5 +27,9 @@ class LabTechnician extends Authenticatable
         return $this->belongsToMany(Camp::class, 'camp_lab_technicians', 'lab_technician_id', 'camp_id');
     }
 
-    
+    public function user()
+    {
+     return $this->belongsTo(User::class,'user_id');
+    }
+
 }

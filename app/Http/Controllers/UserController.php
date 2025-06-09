@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function myProfile($id)
     {
-        if(Auth::user()->role == "super_admin")
+        if(Auth::user()->role == 1)
         {
             $data['user'] = User::where('id',decrypt($id))->first();
             return view('auth.profile.super_admin_profile',$data);
@@ -26,7 +26,7 @@ class UserController extends Controller
 
     public function editProfile($id)
     {
-        if(Auth::user()->role == "super_admin")
+        if(Auth::user()->role == 1)
         {
             $data['user'] = User::where('id',decrypt($id))->first();
             return view('auth.profile.super_admin_profile_edit',$data);

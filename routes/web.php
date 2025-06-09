@@ -48,7 +48,8 @@ Route::post('reset-password', [AuthController::class, 'submitResetPasswordForm']
 
 Route::group(['prefix' => 'superadmin'], function ()
 {
-    Route::group(['middleware' => ['auth:web', 'is_super_admin']], function ()
+    // 'is_super_admin'
+    Route::group(['middleware' => ['auth:web']], function ()
     {
         Route::get('dashboard', [DashboardController::class,'index'])->name('super_admin.dashboard');
     

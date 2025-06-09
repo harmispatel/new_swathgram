@@ -58,6 +58,7 @@ class CustomController extends BaseController
     public function PatientCreate(Request $request)
     {
        try {
+
             $user = Auth::user();
 
             $patient = new Patient();
@@ -99,10 +100,10 @@ class CustomController extends BaseController
                 $this->createTestResults($tests, $report, $request->age, $request->gender);
             }
 
-            return $this->sendResponse(true,'Patient created successfully');
+            return $this->sendResponse(null,'Patient created successfully',true);
           
        } catch (\Throwable $th) {
-         return $this->sendResponse(false, 'something went wrong');
+         return $this->sendResponse(null, 'something went wrong',false);
        }
     }
 
@@ -137,25 +138,25 @@ class CustomController extends BaseController
         }
     }
 
-    public function changePassword(Request $request)
-    {
-        $request->validate([
-            'old_password' => 'required',
-            'new_password' => 'required|min:6',
-            're_password'  => 'required|same:new_password',
-        ]);
+    // public function changePassword(Request $request)
+    // {
+    //     $request->validate([
+    //         'old_password' => 'required',
+    //         'new_password' => 'required|min:6',
+    //         're_password'  => 'required|same:new_password',
+    //     ]);
 
-        $user = auth()->user();
+    //     $user = auth()->user();
 
-        if (!Hash::check($request->old_password, $user->password)) {
-              return $this->sendResponse(null, 'Old password does not match.', false);
-        }
+    //     if (!Hash::check($request->old_password, $user->password)) {
+    //           return $this->sendResponse(null, 'Old password does not match.', false);
+    //     }
 
-        $user->password = Hash::make($request->new_password);
-        $user->save();
+    //     $user->password = Hash::make($request->new_password);
+    //     $user->save();
 
-          return $this->sendResponse(true,'Password updated successfully');
-    }
+    //       return $this->sendResponse(true,'Password updated successfully');
+    // }
 
     public function camplist(request $request)
     {
@@ -203,10 +204,6 @@ class CustomController extends BaseController
 
 
     public function qcdata(request $request){
-
-        // $device=Device::get();
-
-        // $qcdata= GenericQualityControl::with('test')->get();
         
             $qcdata = QcDataResource::collection(
                GenericQualityControl::with('test')->get()

@@ -28,17 +28,30 @@ class AuthController extends Controller
         $input = $request->except('_token');
 
         // lab_technician guard
-        if (Auth::guard('lab_technician')->attempt($input)) {
-            $labTech = Auth::guard('lab_technician')->user();
-            $username = $labTech->username;
-            return redirect()->route('lab_technician.dashboard')->with('success', 'Welcome ' . $username);
-        }
+        // if (Auth::->attempt($input)) {
+        //     $labTech = Auth::guard('lab_technician')->user();
+        //     $username = $labTech->username;
+        //     return redirect()->route('lab_technician.dashboard')->with('success', 'Welcome ' . $username);
+        // }
         
         if (Auth::attempt($input)){
-            if (Auth::user()->role == "super_admin"){
+            $role = Auth::user()->role; //elseif(Auth::user()->role == 5)
+            if ($role == 1){
                 $username = Auth::user()->firstname." ".Auth::user()->lastname;
                 return redirect()->route('super_admin.dashboard')->with('success', 'Welcome '.$username);
+            }elseif($role == 5){
+                    
+                $username = Auth::user()->firstname." ".Auth::user()->lastname;
+                return redirect()->route('super_admin.dashboard')->with('success', 'Welcome ' . $username);
+
+            }elseif($role == 2){
+
+                dd($role == 2);
+                 $username = Auth::user()->firstname." ".Auth::user()->lastname;
+                return redirect()->route('super_admin.dashboard')->with('success', 'Welcome ' . $username);
             }
+                
+            
         }
         return back()->with('error', 'Please Enter Valid Email & Password');
     }

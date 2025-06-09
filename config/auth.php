@@ -43,7 +43,7 @@ return [
         
         'lab_technician' => [
             'driver' => 'session',
-            'provider' => 'lab_technicians',
+            'provider' => 'users',
         ],
 
         'admin' => [
@@ -53,7 +53,7 @@ return [
         
         'api' => [
             'driver' => 'sanctum',
-            'provider' => 'lab_technicians',
+            'provider' => 'users',
         ],
     ],
 
@@ -80,10 +80,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        'lab_technicians' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\LabTechnician::class,
-        ],
+        // 'lab_technicians' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\LabTechnician::class,
+        // ],
 
         // 'users' => [
         //     'driver' => 'database',
@@ -117,12 +117,12 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'lab_technicians' => [
-            'provider' => 'lab_technicians',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_resets'),
-            'expire' => 60,
-            'throttle' => 60,
-        ],
+        // 'lab_technicians' => [
+        //     'provider' => 'lab_technicians',
+        //     'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_resets'),
+        //     'expire' => 60,
+        //     'throttle' => 60,
+        // ],
     ],
 
     /*

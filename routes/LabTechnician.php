@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\labTechnician\PatientController;
 use App\Http\Controllers\labTechnician\PatientReportController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\IsLabTechnician;
 
 
 Route::group(['prefix' => 'lab_technician'], function ()
