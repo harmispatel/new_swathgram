@@ -1,5 +1,5 @@
-@extends('super_admin.layouts.admin-layout')
-@section('title', 'SUPER ADMINS - SWATHGRAM')
+@extends('lab_technician.layouts.lab_technician-layout')
+@section('title', 'LAB TECHNICIAN - SWATHGRAM')
 @section('content')
 
 @php

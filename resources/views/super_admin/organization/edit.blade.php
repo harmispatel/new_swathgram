@@ -199,11 +199,13 @@
                                 '2' => 'Urine app',
                             ];
                         @endphp
-
+                        @php
+                            $selectedAppsArray = is_array($selectedApps) ? $selectedApps : explode(',', $selectedApps ?? '');
+                        @endphp
                         @foreach ($apps as $value => $label)
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" name="app_selection[]" type="checkbox" value="{{ $value }}" id="app_{{ $value }}"
-                                    {{ in_array((string)$value, $selectedApps ?? []) ? 'checked' : '' }}>
+                                  {{ in_array((string)$value, $selectedAppsArray) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="app_{{ $value }}">{{ $label }}</label>
                             </div>
                         @endforeach

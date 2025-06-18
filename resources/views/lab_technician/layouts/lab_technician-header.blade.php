@@ -2,7 +2,7 @@
     // UserDetails
     if (auth()->user()){
         $userID = encrypt(auth()->user()->id);
-        $userName = auth()->user()->firstname." ".auth()->user()->lastname;
+        $userName = auth()->user()->username;
         $userImage = auth()->user()->image;
         $current_route = Route::currentRouteName();
     }else{
@@ -15,7 +15,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{route('lab_technician.dashboard')}}" class="logo d-flex align-items-center">
         <img src="{{ asset('public/assets/default_image/logo/accuster_logo.png') }}" alt="">
         <span class="d-none d-lg-block">Accuster</span>
       </a>
@@ -37,7 +37,7 @@
         <li class="nav-item dropdown pe-3">
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                 @if (!empty($userImage) || $userImage != null)
-                    <img src="{{ asset($userImage) }}" alt="Profile" class="rounded-circle">
+                    <img src="{{ asset('public/super_admin_uploads/users/'.$userImage) }}" alt="Profile" class="rounded-circle">
                 @else
                     <img src="{{ asset('public/assets/default_image/user/defualt_user.png') }}" alt="Profile" class="rounded-circle">
                 @endif
@@ -47,14 +47,14 @@
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
               <h6>{{ $userName }}</h6>
-              <span>Super Admin</span>
+              <span>Lab Technician</span>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.view',$userID) }}">
+              <a class="dropdown-item d-flex align-items-center" href="{{ route('labtechnician.profile.view',$userID) }}">
                 <i class="bi bi-person"></i>
                 <span>My Profile</span>
               </a>

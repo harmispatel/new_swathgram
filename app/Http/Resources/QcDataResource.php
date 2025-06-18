@@ -26,7 +26,7 @@ class QcDataResource  extends JsonResource
             'C1' => $this->C1,
             'C2' => $this->C2,
             'C3' => $this->C3,
-            'date' => $created->format('Y-m-d'),
+            'date' => $created->format('d-m-Y'),
             'time' => $created->format('H:i:s'),
             'status' => $this->status,
             'active' => $this->active,

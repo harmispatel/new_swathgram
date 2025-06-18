@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\LoginController;
 use App\Http\Controllers\QcReportController;
 use App\Http\Controllers\SatelliteController;
-
+    
 Route::get('config-clear', function () {
     Artisan::call('cache:clear');
     Artisan::call('route:clear');
@@ -35,6 +35,9 @@ Route::get('config-clear', function () {
     dd("Cache is cleared");
 });
 
+Route::get('/', function () {
+    return view('auth.login');
+});
 
 
 Route::get('/login',[AuthController::class,'showLogin'])->name('login');

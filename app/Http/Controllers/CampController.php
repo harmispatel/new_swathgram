@@ -105,6 +105,8 @@ class CampController extends Controller
             $camp->save();
 
             $camp->labTechnicians()->sync($request->lab_technician);
+
+
             
             return redirect()->route('camp')->with('success', 'Camp created successfully.'); 
             

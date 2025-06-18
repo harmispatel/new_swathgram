@@ -1,5 +1,5 @@
-@extends('lab_technician.layouts.lab_technician-layout')
-@section('title', 'Tab Technician - SWATHGRAM')
+@extends('admin.layouts.admin-layout')
+@section('title', 'ADMINS - SWATHGRAM')
 @section('content')
 
 <section class="section dashboard">

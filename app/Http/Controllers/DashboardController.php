@@ -20,6 +20,10 @@ class DashboardController extends Controller
             return view('lab_technician.dashboard', compact('user'));
         }elseif($user && $user->role == 2){
             return view('admin.dashboard', compact('user'));
+        }elseif($user && $user->role == 3){
+            return view('pathologist.dashboard', compact('user'));
+        }elseif($user && $user->role == 6){
+            return view('manager.dashboard', compact('user'));
         }
     }
     

@@ -48,11 +48,21 @@ return [
 
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admins',
+            'provider' => 'users',
         ],
         
         'api' => [
             'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
+        
+         'pathologist' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+         'manager' => [
+            'driver' => 'session',
             'provider' => 'users',
         ],
     ],
@@ -79,16 +89,6 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
-
-        // 'lab_technicians' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Models\LabTechnician::class,
-        // ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*

@@ -8,7 +8,7 @@ use App\Http\Resources\PatientCollection;
 use Illuminate\Http\Request;
 
 use App\Models\Camp;
-use App\Models\package;
+use App\Models\Package;
 use App\Models\TestProfile;
 use App\Models\Test;
 use App\Models\Patient;
@@ -22,26 +22,48 @@ use App\Http\Resources\PackageListResource;
 use App\Models\GenericQualityControl;
 use App\Models\Device;
 use Carbon\Carbon;
+use App\Models\LabTechnician;
+use App\Http\Resources\PatientResource;
 
 use App\Http\Resources\QcDataResource;
 
 
 class CustomController extends BaseController
 {
-    public function CommanData(request $request){
+    public function CommanData(){
         $camps = Camp::select('id','camp_name')->get();
-        $packages = Package::select('id','package_name')->get();
-        $profiles = TestProfile::select('id','name')->get();
+        // $packages = Package::select('id','package_name')->get();
+        // $profiles = TestProfile::select('id','name')->get();
          
         $data = [
             'camp' => $camps,
-            'package' => $packages,
-            'profiles' => $profiles
+            // 'package' => $packages,
+            // 'profiles' => $profiles
         ];
-        return $this->sendResponse($data, 'Patient Data Get Successful', true);
+
+        
+        return $this->sendResponse($camps, 'Camp Data Get Successful', true);
     }
 
-    public function getTestsByProfile(Request $request)
+    public function package()
+    {
+        $packages = Package::select('id','package_name')->get();
+        return $this->sendResponse($packages, 'package list Data Get Successful', true);
+    }
+
+
+     public function amount(){
+    //   $packages = Package::select('id','package_name')->get();
+        $amounts = [
+                ['amount' => 100],
+                ['amount' => 200],
+                ['amount' => 500],
+            ];
+
+        return $this->sendResponse($amounts, 'list Data Get Successful', true);
+    }
+
+    public function getTestsByProfile()
     {
         $profiles = TestProfile::with(['tests' => function ($query) {
                 $query->where('is_active', 1)
@@ -55,57 +77,77 @@ class CustomController extends BaseController
         return $this->sendResponse($profiles, 'Tests Get Successfully', true);
     }
 
+   
+
+    
     public function PatientCreate(Request $request)
     {
-       try {
-
+        try {
             $user = Auth::user();
+            dd($user);
+            if (!$user) {
+                return $this->sendResponse(null, 'Unauthorized user', false);
+            }
+
+            $lab_tech = LabTechnician::where('user_id', $user->id)->first();
+            if (!$lab_tech) {
+                return $this->sendResponse(null, 'Lab Technician not found', false);
+            }
 
             $patient = new Patient();
             $patient->user_id = $user->id;
             $patient->email = $request->email;
             $patient->username = $request->username;
-            $patient->identity_proof_type = $request->identity_proof_type;
+            $patient->identity_proof_type = $request->identity_proof_type; 
             $patient->age = $request->age;
             $patient->gender = $request->gender;
-            $patient->refrance_by = isset($request->refrance_by) ? $request->refrance_by : '';
+            $patient->refrance_by = $request->refrance_by ?? null;
             $patient->mobile_number = $request->mobile_number;
             $patient->address = $request->address;
             $patient->medical_history = $request->medical_history;
-            $patient->organization_id = $user->organization_id;
-            $patient->identity_proof_number = $user->identity_proof_number;
-            $patient->camp_id = $request->camp_name ?? null;
-            $patient->patient_code = '#' . random_int(2000000000,2000000000);
-            $patient->save();
+            $patient->organization_id = $lab_tech->organization_id;
+            $patient->identity_proof_number = $request->identity_proof_number ?: null;
+            $patient->camp_id = $request->camp_id ?? null;
+            $patient->patient_code = '#' . random_int(2000000000, 2999999999);
+            $patient->abha_address_number = $request->abha_address_number;
+            $patient->abha_number = $request->abha_number;
+            $patient->abha_address = $request->abha_address;
+            $patient->amount = $request->amount;
+            $patient->save(); 
 
-            $camp = Camp::where('id',$request->camp_id)->first();
-          
-            if ($camp && $patient) {
-                $report = new Report();
-                $report->camp_id = $camp->id;
-                $report->patient_id = $patient->id;
-                $report->pathologist_id = $camp->pathologist_id;
-                $report->organization_id = $camp->organization_id;
-                $report->save();
+            $report = null;
+            if ($request->camp_id) {
+                $camp = Camp::find($request->camp_id);
+                if ($camp) {
+                    $report = new Report();
+                    $report->camp_id = $camp->id;
+                    $report->patient_id = $patient->id;
+                    $report->pathologist_id = $camp->pathologist_id;
+                    $report->organization_id = $camp->organization_id;
+                    $report->save();
+                }
             }
 
-            if($request->package){
-                $package_test_ids = PackageTest::where('package_id',$request->package)->pluck('test_id');
-                $tests = Test::whereIn('id',$package_test_ids)->get();
+            if ($request->package && $report) {
+                $package_test_ids = PackageTest::where('package_id', $request->package)->pluck('test_id');
+                $tests = Test::whereIn('id', $package_test_ids)->get();
                 $this->createTestResults($tests, $report, $request->age, $request->gender);
             }
 
-            if($request->test_list){
-                $tests = Test::whereIn('id',$request->test_list)->get();
+            if ($request->test_list && $report) {
+                $tests = Test::whereIn('id', $request->test_list)->get();
                 $this->createTestResults($tests, $report, $request->age, $request->gender);
             }
 
-            return $this->sendResponse(null,'Patient created successfully',true);
-          
-       } catch (\Throwable $th) {
-         return $this->sendResponse(null, 'something went wrong',false);
-       }
+            // return $this->sendResponse(null, 'Patient created successfully', true);
+            return $this->sendResponse(new PatientResource($patient, $request->test_list ?? []), 'Patient created successfully', true);
+
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, $th->getMessage(), false);
+        }
     }
+
 
     private function createTestResults($tests, $report, $age, $gender) {
         foreach ($tests as $test) {
@@ -124,16 +166,15 @@ class CustomController extends BaseController
         }
     }
 
-    public function patientlist(Request $request)
+    public function patientlist()
     {
         try {
-
-            $patients = Patient::with('camp', 'reports.testResults.test')->orderBy('id','desc')->get();
+            $user_id=Auth::user()->id;
+            $patients = Patient::where('user_id',$user_id)->with('camp', 'reports.testResults.test')->get();
             return new PatientCollection($patients);
         } 
         catch (\Throwable $th) 
         {
-            dd($th);
             return redirect()->back()->with('error', 'Something went wrong!');
         }
     }
@@ -158,26 +199,25 @@ class CustomController extends BaseController
     //       return $this->sendResponse(true,'Password updated successfully');
     // }
 
-    public function camplist(request $request)
+    public function camplist()
     {
             $technicianId = Auth::id();
             $camps = Camp::whereRelation('labTechnicians', 'lab_technicians.id', $technicianId)
                             ->get();
 
-            return $this->sendResponse([
-                'camplist' => CamplistResource::collection($camps),
-            ], 'camp list successfully.', true);
+            return $this->sendResponse(
+                CamplistResource::collection($camps),
+             'camp list successfully.', true);
 
     }
 
-    public function packagelist(request $request)
+    public function packagelist()
     {
 
         $packages=Package::get();
-        return $this->sendResponse([
-                'camplist' => PackageListResource::collection($packages),
-            ], 'camp list successfully.', true);
-
+        return $this->sendResponse(
+              PackageListResource::collection($packages),
+             'package list successfully.', true);
     }
 
 
@@ -203,17 +243,16 @@ class CustomController extends BaseController
     }
 
 
-    public function qcdata(request $request){
+    public function qcdata(){
         
             $qcdata = QcDataResource::collection(
                GenericQualityControl::with('test')->get()
             );
 
 
-        return $this->sendResponse([
-            'qcdata' =>$qcdata,
-        ], 'Qc list fetched successfully.', true);
-
+        return $this->sendResponse(
+          $qcdata,
+         'Qc list fetched successfully.', true);
     }
     
 }

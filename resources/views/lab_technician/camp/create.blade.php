@@ -1,5 +1,5 @@
-@extends('super_admin.layouts.admin-layout')
-@section('title', 'SUPER ADMINS - SWATHGRAM')
+@extends('lab_technician.layouts.lab_technician-layout')
+@section('title', 'LAB TECHNICIAN ADMINS - SWATHGRAM')
 @section('content')
 
 @php
@@ -441,8 +441,9 @@
             img.onload = function () {
                 const width = img.naturalWidth;
                 const height = img.naturalHeight;
-                    // 400 x 97
-                if (width === 402 && height === 82) {
+                    // 400 x 97 for header container
+                // if (width === 400 && height === 97) {
+                if (width === 400 && height === 80) {
                     $('#preview_report_header_image').attr('src', objectUrl);
                 } else {
                     alert("Image must be exactly 2488px wide and between 450px to 600px tall.");
@@ -470,8 +471,9 @@
                 const width = img.naturalWidth;
                 const height = img.naturalHeight;
 
-                // 400 x 73
-                if (width === 402 && height === 82) {
+                // 400 x 73 Fpr Footer
+                // if (width === 402 && height === 82) {
+                if (width === 402 && height === 51) {
                     $('#preview_report_footer_image').attr('src', objectUrl);
                 } else {
                     alert("Footer image must be exactly 2488px wide and between 450px to 600px tall.");

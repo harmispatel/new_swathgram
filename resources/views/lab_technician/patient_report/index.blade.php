@@ -185,7 +185,7 @@
                                     echo implode(', ', array_unique($testNames));
                                 @endphp
                             </td>
-                            <td>{{ $patient->camp->camp_name }}</td>
+                            <td>{{ $patient->camp->camp_name ?? ''}}</td>
                             <td>
                                 @php
                                     $totalAmount = 0;

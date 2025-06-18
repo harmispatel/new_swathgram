@@ -75,11 +75,11 @@
                 <tbody>
                     @foreach ($patients as $patient)
                         <tr>
-                            <td>{{ $patient->username }}</td>
+                            <td>{{ $patient->username ?? ''}}</td>
                             <td>{{ $patient->id }}</td>
                             <td>{{ $patient->mobile_number }}</td>
                             <td>{{ $patient->age }}</td>
-                            <td>{{ $patient->camp->camp_name }}</td>
+                            <td>{{ $patient->camp->camp_name ?? '' }}</td>
                             <td>{{ $patient->created_at }}</td>
                             <td>
                                 <a onclick="deletePatient('{{ encrypt($patient->id) }}')" class="ps-2">

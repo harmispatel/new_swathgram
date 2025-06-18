@@ -278,7 +278,7 @@
         </div>
 
         <div class="text-center mb-3 mt-5">
-            <a href="{{ route('lab_technician.dashboard') }}" type="button" class="btn btn-danger me-2">Cancel</a>
+            <a href="{{ route('lab_technician.patient') }}" type="button" class="btn btn-danger me-2">Cancel</a>
             <button type="submit" class="btn btn-success">Save</button>
         </div>
 

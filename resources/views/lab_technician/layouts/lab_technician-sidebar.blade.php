@@ -6,8 +6,8 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
         <li class="nav-item">
-            <a class="nav-link {{ ($routeName == 'super_admin.dashboard') ? 'active-tab' : '' }}" href="index.html">
-                <i class="bi bi-grid {{ ($routeName == 'super_admin.dashboard') ? 'icon-tab' : '' }}"></i>
+            <a class="nav-link {{ ($routeName == 'lab_technician.dashboard') ? 'active-tab' : '' }}" href="{{route('lab_technician.dashboard')}}">
+                <i class="bi bi-grid {{ ($routeName == 'lab_technician.dashboard') ? 'icon-tab' : '' }}"></i>
                 <span>Dashboard</span>
             </a>
         </li>

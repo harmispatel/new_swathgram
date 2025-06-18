@@ -62,6 +62,9 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
+
+
+       
         $validated = $request->validate([
             'camp_name' => 'required',
             'email' => 'required|email|unique:patients,email',
@@ -71,14 +74,15 @@ class PatientController extends Controller
             'age' => 'required',
             'gender' => 'required',
             'mobile_number' => 'required',
-            'package' => 'required',
+            'package' => 'required',    
             'address' => 'required',
             'medical_history' => 'required',
             'profile' => 'required',
-            'test_list' => 'required|array',
-            'test_list.*' => 'exists:tests,id',
+            // 'test_list' => 'required',
+            // 'test_list.*' => 'exists:tests,id',
             'refrance_by' => 'nullable|string'
         ]);
+
 
         $user = User::create([
             'username'=>$request->username,
@@ -87,7 +91,7 @@ class PatientController extends Controller
             'role'=>4,
         ]);
 
-        $user = Auth::user()->id;
+        $user = Auth::user();
         $lab_tech = LabTechnician::where('user_id',$user->id)->first();
 
         $patient = new Patient();
@@ -102,7 +106,7 @@ class PatientController extends Controller
         $patient->address = $request->address;
         $patient->medical_history = $request->medical_history;
         $patient->organization_id = $lab_tech->organization_id;
-        $patient->identity_proof_number = $lab_tech->identity_proof_number;
+        $patient->identity_proof_number = $lab_tech->identity_proof_number ?? null;
         $patient->camp_id = $request->camp_name ?? null;
         $patient->patient_code = '#' . random_int(2000000000,2000000000);
         $patient->save();

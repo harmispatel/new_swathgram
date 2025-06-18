@@ -42,7 +42,7 @@ class UserController extends Controller
     {
         $user  = User::find($request->user_id);
 
-        if(Auth::user()->role == "super_admin")
+        if(Auth::user()->role == 1)
         {
             $request->validate([
                 'firstname'             =>      'required',

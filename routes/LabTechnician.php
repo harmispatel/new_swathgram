@@ -6,12 +6,18 @@ use App\Http\Controllers\labTechnician\PatientController;
 use App\Http\Controllers\labTechnician\PatientReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\IsLabTechnician;
+use App\Http\Controllers\labTechnician\UserController;
 
 
-Route::group(['prefix' => 'lab_technician'], function ()
-{
-    Route::middleware(['auth:lab_technician'])->group(function () {
+// Route::group(['prefix' => 'lab_technician'], function ()
+// {
+//     Route::middleware(['auth:lab_technician'])->group(function () {
+    Route::middleware(['auth', 'labtechician'])->prefix('labtechician')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('lab_technician.dashboard');
+
+        Route::get('/my-profile/{id}',[UserController::class,'myProfile'])->name('labtechnician.profile.view');
+        Route::get('/edit-profile/{id}',[UserController::class,'editProfile'])->name('labtechnician.profile.edit');
+        Route::post('/update-profile',[UserController::class,'updateProfile'])->name('labtechnician.profile.update');
     
         Route::controller(CampController::class)->group(function () {
             Route::get('camps','index')->name('lab_technician.camp');
@@ -21,6 +27,7 @@ Route::group(['prefix' => 'lab_technician'], function ()
             Route::post('camp/update','update')->name('lab_technician.camp.update');
             Route::post('camp/delete','delete')->name('lab_technician.camp.delete');
 
+            Route::post('camp/get-devices', 'getDevices')->name('lab_technician.organization.devices');
             // Route::post('camp/lab-get-devices', 'getDevices')->name('lab.organization.devices');
         });
 
@@ -38,4 +45,4 @@ Route::group(['prefix' => 'lab_technician'], function ()
             
         });
     });
-});
+// });

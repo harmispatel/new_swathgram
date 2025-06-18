@@ -125,7 +125,7 @@
                          <select name="lab_technician[]" id="lab_technician" class="form-control {{ $errors->has('lab_technician') ? 'is-invalid' : '' }}" multiple>
                             <option value="">Select Lab Technician</option>
                             @foreach ($lab_technicians as $lab_technician)
-                                <option value="{{ $lab_technician->id }}" 
+                                <option value="{{ $lab_technician->user_id }}" 
                                      {{ $camp->labTechnicians->contains('id', $lab_technician->id) ? 'selected' : '' }}>
                                         {{ $lab_technician->username }}
                                 </option>

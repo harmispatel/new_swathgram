@@ -85,7 +85,7 @@
                 <tbody>
                     @foreach ($qc_reports as $qc_report)
                         <tr>
-                            <td>{{ $qc_report->test->test_name }}</td>
+                            <td>{{ $qc_report->test->test_name ?? ''}}</td>
                             <td></td>
                             <td></td>
                             <td>{{ $qc_report->L1 }}</td>

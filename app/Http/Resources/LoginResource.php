@@ -17,9 +17,12 @@ class LoginResource extends JsonResource
          return [
             'id'    => $this->id,
             'email' => $this->email ?? null,
-            'username' => $this->username??null,
-            'phone' => $this->contact ?? null,
-            'photo' => $this->photo ?? null,
+            'username' => $this->username ?? null,
+            'phone' => $this->phone ?? null,
+            // 'photo' => $this->photo ?? null,
+            'photo'    => $this->image 
+                        ? asset('public/super_admin_uploads/users/' . $this->image)
+                        : asset('public/admin_images/demo_images/profiles/profile1.jpg'),
             'address'=> $this->address ?? null,
             'remember' => $this->remember ?? null
         ];

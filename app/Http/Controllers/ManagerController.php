@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 
 class ManagerController extends Controller
@@ -43,7 +44,6 @@ class ManagerController extends Controller
             'dob' => 'required'
         ]);
 
-        
         $photo ='';
         if($request->hasFile('photo'))
         {
@@ -60,8 +60,16 @@ class ManagerController extends Controller
             $degree = $imageName;
         }
 
+        $user = User::create([
+            'username'=>$request->username,
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+            'phone'=>$request->contact,
+            'role'=>6,
+        ]);
+
         $manager = new Manager();
-        $manager->user_id = Auth::user()->id;
+        $manager->user_id = $user->id;
         $manager->organization_id = $request->organization_type;
         $manager->name = $request->name;
         $manager->email = $request->email;
@@ -77,7 +85,6 @@ class ManagerController extends Controller
         $manager->city = $request->city;
         $manager->dob = $request->dob;
         $manager->save();
-        
         return redirect()->route('managers')->with('success', 'Manager created successfully.'); 
     }
 

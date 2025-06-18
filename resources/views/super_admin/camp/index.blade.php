@@ -31,7 +31,7 @@
                             {{ $camp->labTechnicians->pluck('username')->implode(', ') }}
                         </td>
                         <td>
-                            {{ $camp->pathologist->username }}
+                            {{ $camp->pathologist->username ?? ''}}
                         </td>
                         <td>{{ $camp->created_at->format('d M Y') }}</td>
                         <td>

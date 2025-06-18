@@ -102,7 +102,7 @@
                                             <label class="form-label">{{ __('Preview')}}</label>
                                             <div>
                                                 @if(!empty($user->image))
-                                                    <img src="{{ $user->image }}" width="100">
+                                                    <img src="{{ asset('public/super_admin_uploads/users/'. $user['image']) }}" width="100">
                                                 @else
                                                     <img src="{{ asset('public/admin_images/not-found/not-found2.png') }}" width="100">
                                                 @endif

@@ -110,7 +110,7 @@ class PathologistController extends Controller
         $pathologist = Pathologist::find(decrypt($id));
         $organizations = Organization::orderBy('id','desc')->get();
       
-        return view('super_admin.pathologist.edit',compact('pathologist','package'));
+        return view('super_admin.pathologist.edit',compact('pathologist','organizations'));
     }
 
     public function update(Request $request)

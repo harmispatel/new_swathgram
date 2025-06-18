@@ -27,7 +27,7 @@
             <div class="card">
                 <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
                     @if(!empty($user['image']))
-                        <img src="{{ $user['image'] }}" alt="Profile" class="rounded-circle w-50">
+                        <img src="{{ asset('public/super_admin_uploads/users/'. $user['image']) }}" alt="Profile" class="rounded-circle w-50">
                     @else
                         <img src="{{ asset('public/admin_images/demo_images/profiles/profile1.jpg') }}" alt="Profile" class="rounded-circle w-50">
                     @endif
