@@ -35,6 +35,8 @@ class PatientCollection extends ResourceCollection
                     'age'          => $data->age,
                     'gender'       => $data->gender === 'male' ? 'M' : ($data->gender === 'female' ? 'F' : 'O'),
                     'cost'         => $totalValue,
+                    'register_at'  => date('d-m-Y', strtotime($data->registered_at)),
+                    'create_at'    =>  date('d-m-Y H:i', strtotime($data->created_at)),
                 ];
             }),
         ];

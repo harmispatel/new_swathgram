@@ -152,22 +152,59 @@ class ManagerController extends Controller
         return redirect()->route('managers')->with('success', 'Manager created successfully.'); 
     }
 
+    // public function delete(Request $request)
+    // {
+    //     try {
+         
+    //         Manager::where('id',decrypt($request->id))->delete();
+    //         return response()->json([
+    //             'success' => 1,
+    //             'message' => "Manager Delete successfully",
+    //         ]);
+
+    //     } catch (\Throwable $th) {
+    //         dd($th);
+    //         return response()->json([
+    //             'success' => 0,
+    //             'message' => "Internal Server Error!",
+    //         ]);
+    //     }
+    // }
+
     public function delete(Request $request)
     {
         try {
-         
-            Manager::where('id',decrypt($request->id))->delete();
+            $managerId = decrypt($request->id);
+
+            $manager = Manager::findOrFail($managerId);
+
+            if (!$manager) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Manager not found',
+                ]);
+            }
+
+            $user = User::findOrFail($manager->user_id);
+            $manager->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => "Manager Delete successfully",
             ]);
 
-        } catch (\Throwable $th) {
+        }  catch (\Throwable $th) {
             dd($th);
             return response()->json([
                 'success' => 0,
                 'message' => "Internal Server Error!",
             ]);
         }
+        
     }
+
 }

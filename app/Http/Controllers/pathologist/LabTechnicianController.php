@@ -211,7 +211,24 @@ class LabTechnicianController extends Controller
     {
         try {
          
-            LabTechnician::where('id',decrypt($request->id))->delete();
+            $labtechnicianId=decrypt($request->id);
+
+            $lab_technician=LabTechnician::findOrFail($labtechnicianId);
+
+             if (!$lab_technician) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Lab Technician not found',
+                ]);
+            }
+
+             $user = User::findOrFail($lab_technician->user_id);
+             $lab_technician->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => "Lab Technician Delete successfully",

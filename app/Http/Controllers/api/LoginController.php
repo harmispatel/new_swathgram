@@ -44,7 +44,6 @@ class LoginController extends BaseController
         
     }
 
-
     //pending
     public function forgotPassword(Request $request)
     {
@@ -67,11 +66,14 @@ class LoginController extends BaseController
             $token = Password::createToken($LabTechnician);
 
             $email = $LabTechnician->email;
-            Mail::send('email_api.forgetPassword', ['token' => $token,'email'=>$email], function($message) use($request){
-                $message->to($request->email);
-                $message->subject('Reset Password');
-            });
-
+            // Mail::send('email_api.forgetPassword', ['token' => $token,'email'=>$email], function($message) use($request){
+            //     $message->to($request->email);
+            //     $message->subject('Reset Password');
+            // });
+            Mail::send('email_api.forgetPassword', ['token' => $token, 'email' => $email], function($message) use($request) {
+                    $message->to($request->email);
+                    $message->subject('Reset Password');
+                });
 
             return $this->sendResponse(null, 'Send Link Your Mail Please Check.', true);
         } catch (\Throwable $th) {
@@ -80,10 +82,12 @@ class LoginController extends BaseController
         }
 
     }
+
     public function showResetPasswordForm($token,$email)
     {
         return view('passwordforgot_api.reset-password', ['token' => $token,'email'=>$email]);
     }
+
     public function ResetPasswordForm(Request $request)
     {
         $status = Password::reset(
@@ -101,7 +105,6 @@ class LoginController extends BaseController
      return back()->withInput()->withErrors(['email' => __($status)]);
 
     }
-
 
     public function logout(Request $request)
     {
@@ -125,20 +128,7 @@ class LoginController extends BaseController
 
     public function profileupdate(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendResponse(null, $validator->errors()->first(), false);
-        }
-
         $user = Auth::user();
-
-        if (!$user) {
-            return $this->sendResponse(null, 'Unauthorized.', false);
-        }
-
         $labtechnician = LabTechnician::where('user_id', $user->id)->first();
 
         if (!$labtechnician) {
@@ -199,14 +189,12 @@ class LoginController extends BaseController
             'new_password' => 'required|min:6',
         ]);
 
-    if ($validator->fails()) {
-        return $this->sendResponse(null, $validator->errors()->first(), false);
-    }
+        if ($validator->fails()) {
+            return $this->sendResponse(null, $validator->errors()->first(), false);
+        }
         $user = auth()->user();
 
-        // if (!Hash::check($request->old_password, $user->password)) {
-        //       return $this->sendResponse(null, 'Old password does not match.', false);
-        // }
+
 
         $user->update([
             'password'=>Hash::make($request->new_password)

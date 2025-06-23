@@ -193,9 +193,20 @@ class PatientReportController extends Controller
     public function delete(Request $request)
     {
         try {
-            $patient = Patient::find(decrypt($request->id));
-            $patient->delete();
+            $patient = Patient::findOrFail(decrypt($request->id));
 
+            if (!$patient) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Manager not found',
+                ]);
+            }
+
+            $user = User::find($patient->user_id);
+            $patient->delete();
+            if ($user) {
+                $user->delete();
+            }
             return response()->json([
                 'success' => 1,
                 'message' => "Patient Delete successfully",

@@ -290,12 +290,12 @@
 <script>
     $(document).ready(function () {
        $('#test_list').select2();
-       $('#test_list').prop('disabled', true); // Initially disabled
     });
 
     $('#profile').on('change', function () {
         let profileId = $(this).val();
         $('#test_list').empty().append('<option value="">Select Test</option>');
+        testListLocked = false;
 
         if (profileId) {
             $.ajax({
@@ -313,13 +313,20 @@
                                 $('#test_list').append(`<option value="${test.id}" selected>${test.test_name}</option>`);
                             });
 
-                            $('#test_list').prop('disabled', true);
+                            $('#test_list').trigger('change');
+                            testListLocked = true;
                         }
                     },
                     error: function () {
                         alert('Failed to fetch tests.');
                     }
                 });
+        }
+    });
+
+    $('#test_list').on('select2:opening select2:unselecting', function (e) {
+        if (testListLocked) {
+            e.preventDefault();
         }
     });
 </script>

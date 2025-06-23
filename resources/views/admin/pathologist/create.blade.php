@@ -37,10 +37,10 @@
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-3">
-                        <label class="form-label">Organization *<span class="text-danger">*</span></label>
+                        <label class="form-label">Organization *<span class="text-danger"></span></label>
                     </div>
                     <div class="col-md-9">
-                        <select id="organization_type" class="form-select {{ $errors->has('organization_type') ? 'is-invalid' : '' }}" name="organization_type[]" multiple="multiple">
+                        <select id="organization_type" class="form-select {{ $errors->has('organization_type') ? 'is-invalid' : '' }}" name="organization_type[]">
                             @foreach ($organizations as $organization)
                                 <option value="{{ $organization->id }}">{{ $organization->organization_name }}</option>
                             @endforeach
@@ -335,7 +335,7 @@
 @section('custom-js')
 <script>
 $(document).ready(function() {
-    $('#organization_type').select2();
+   // $('#organization_type').select2();
 });
 </script>
 @endsection

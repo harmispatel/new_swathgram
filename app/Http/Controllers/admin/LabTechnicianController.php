@@ -21,7 +21,8 @@ class LabTechnicianController extends Controller
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
+        $user_id = Auth::user()->id;
+        $organizations = Organization::where('user_id',$user_id)->orderBy('id','desc')->get();
         return view('admin.lab_technician.create',compact('organizations'));
     }
 
@@ -117,7 +118,8 @@ class LabTechnicianController extends Controller
     public function edit($id)
     {
         $lab_technician = LabTechnician::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
+        $user_id = Auth::user()->id;
+        $organizations = Organization::where('user_id',$user_id)->orderBy('id','desc')->get();
       
         return view('admin.lab_technician.edit',compact('lab_technician','organizations'));
     }
@@ -212,7 +214,24 @@ class LabTechnicianController extends Controller
     {
         try {
          
-            LabTechnician::where('id',decrypt($request->id))->delete();
+             $labtechnicianId=decrypt($request->id);
+
+            $lab_technician=LabTechnician::findOrFail($labtechnicianId);
+
+             if (!$lab_technician) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Lab Technician not found',
+                ]);
+            }
+
+             $user = User::findOrFail($lab_technician->user_id);
+             $lab_technician->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => "Lab Technician Delete successfully",

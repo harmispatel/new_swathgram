@@ -19,7 +19,7 @@ class PackageListResource extends JsonResource
             'package_name'  => $this->package_name ?? null,
             'package_price' => $this->price ?? null,
             'package_type' => $this->package_type??null,
-        
+            'tests' => $this->tests->pluck('test_name')
         ];
     }
 }

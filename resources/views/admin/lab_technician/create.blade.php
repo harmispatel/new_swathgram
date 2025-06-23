@@ -344,7 +344,7 @@
 @section('custom-js')
 <script>
 $(document).ready(function() {
-    $('#organization_type').select2();
+   // $('#organization_type').select2();
 });
 </script>
 @endsection

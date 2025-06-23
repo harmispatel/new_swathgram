@@ -104,7 +104,7 @@
                         <label class="form-label">Organization<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <select id="organization_type" class="form-select {{ $errors->has('organization_type') ? 'is-invalid' : '' }}" name="organization_type[]" multiple="multiple">
+                        <select id="organization_type" class="form-select {{ $errors->has('organization_type') ? 'is-invalid' : '' }}" name="organization_type[]">
                             @foreach ($organizations as $organization)
                                 <option value="{{ $organization->id }}" {{ $package->organizations->contains('id', $organization->id) ? 'selected' : '' }}>{{ $organization->organization_name }}</option>
                             @endforeach
@@ -216,7 +216,7 @@
 @section('custom-js')
 <script>
     $(document).ready(function() {
-        $('#organization_type').select2();
+     //   $('#organization_type').select2();
         $('#test_list').select2();
     });
 
@@ -360,7 +360,7 @@
 
     $(document).ready(function() 
     {
-        $('#organization_type').select2();
+      //  $('#organization_type').select2();
 
         const selectedProfileId = $('#profile').val();
         const selectedTestIds = @json($package->tests->pluck('id'));

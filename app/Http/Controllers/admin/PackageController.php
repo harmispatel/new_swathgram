@@ -9,6 +9,7 @@ use App\Models\TestProfile;
 use App\Models\TestSubprofile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class PackageController extends Controller
 {
@@ -73,7 +74,7 @@ class PackageController extends Controller
         $tests = Test::orderBy('id','desc')->get();
         $test_profiles = TestProfile::all();
         $sub_profiles = TestSubprofile::all();
-        $organizations = Organization::orderBy('id','desc')->get();
+        $organizations = Organization::where('user_id',Auth::user()->id)->orderBy('id','desc')->get();
         return view('admin.package.create',compact('organizations','tests','test_profiles','sub_profiles'));
     }
 
@@ -114,7 +115,7 @@ class PackageController extends Controller
     public function edit($id)
     {
         $package = Package::with('tests.testProfile', 'tests.testSubprofile')->find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
+        $organizations = Organization::where('user_id',Auth::user()->id)->orderBy('id','desc')->get();
         $tests = Test::orderBy('id','desc')->get();
         $test_profiles = TestProfile::all();
         $sub_profiles = TestSubprofile::all();

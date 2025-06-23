@@ -17,11 +17,11 @@
         @yield('custom-css')
     </head>
 
-    <body>
+    <body class="d-flex flex-column min-vh-100">
         @include('lab_technician.layouts.lab_technician-header')
         @include('lab_technician.layouts.lab_technician-sidebar')
 
-        <main id="main">@yield('content')</main>
+        <main id="main" class="flex-grow-1">@yield('content')</main>
 
         @include('lab_technician.layouts.lab_technician-footer')
 

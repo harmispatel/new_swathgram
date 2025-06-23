@@ -199,6 +199,9 @@ Route::group(['prefix' => 'superadmin'], function ()
             Route::get('qc-report','index')->name('qc_report');
             Route::post('qc-report/delete','delete')->name('qc_report.delete');
         });
+
+         Route::get('/revenue-export', [RevenueController::class, 'export'])->name('revenue.export');
     });
+
 });
 

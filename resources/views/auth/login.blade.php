@@ -51,7 +51,7 @@
 
                                         <div class="col-12">
                                             <div class="input-group">
-                                                <input type="text" name="username" placeholder="Username"
+                                                <input type="text" name="username" placeholder="Username" value="{{old('username')}}"
                                                     class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}"
                                                     id="username" style="color: white;">
                                                 @if($errors->has('username'))

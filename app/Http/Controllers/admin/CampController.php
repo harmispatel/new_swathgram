@@ -9,12 +9,16 @@ use App\Models\Organization;
 use App\Models\Package;
 use App\Models\Pathologist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampController extends Controller
 {
     public function index()
     {
-        $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])->orderBy('id','desc')->get();
+        $user = Auth::user();
+        $organization = Organization::where('user_id',$user->id)->first();
+
+        $camps = Camp::where('organization_id',$organization->id)->with(['organizations', 'labTechnicians', 'pathologist'])->orderBy('id','desc')->get();
         return view('admin.camp.index',compact('camps'));
     }
 

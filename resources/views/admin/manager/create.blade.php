@@ -37,11 +37,10 @@
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-md-3">
-                        <label class="form-label">Organization *<span class="text-danger">*</span></label>
+                        <label class="form-label">Organization<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
                         <select name="organization_type" class="form-select {{ $errors->has('organization_type') ? 'is-invalid' : '' }}">
-                            <option value="">Select Organization</option>
                             @foreach ($organizations as $organization)
                                 <option value="{{ $organization->id }}">{{ $organization->organization_name }}</option>
                             @endforeach

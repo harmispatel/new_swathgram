@@ -16,16 +16,15 @@ class CampController extends Controller
 {
     public function index()
     {
-        $user = Auth::user()->id;
+        $user = Auth::user();
         $lab_technician = LabTechnician::where('user_id',$user->id)->first();
         $labTechnicianId = $lab_technician->user_id;
 
         $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])
-        ->whereHas('labTechnicians',function ($query) use ($labTechnicianId){
-            $query->where('lab_technicians.id',$labTechnicianId);
-        })
-        ->orderBy('id','desc')
-        ->get();
+            ->whereHas('labTechnicians',function ($query) use ($labTechnicianId){
+                $query->where('lab_technicians.user_id',$labTechnicianId);
+            })->orderBy('id','desc')->get();
+
         return view('lab_technician.camp.index',compact('camps'));
     }
 

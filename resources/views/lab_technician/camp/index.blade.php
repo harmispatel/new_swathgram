@@ -2,10 +2,10 @@
 @section('title', 'Lab Technician - SWATHGRAM')
 @section('content')
 
-<section class="section show-section camp mt-3">
-    <div class="addbutton">
+<section class="section show-section camp mt-3 pt-3">
+    {{-- <div class="addbutton">
         <a href="{{ route('lab_technician.camp.create') }}" class="btn btn-primary">Add Camp</a>
-    </div>  
+    </div>   --}}
     <div class="row">
         <table id="camp_table" class="table table-striped pt-2">
             <thead>
@@ -16,7 +16,7 @@
                     <th>Lab Technician</th>
                     <th>Pathologist</th>
                     <th>Created On</th>
-                    <th>Action</th>
+                    {{-- <th>Action</th> --}}
                 </tr>
             </thead>
 
@@ -31,16 +31,16 @@
                             {{ $camp->labTechnicians->pluck('username')->implode(', ') }}
                         </td>
                         <td>
-                            {{ $camp->pathologist->username }}
+                            {{ $camp->pathologist->username ?? '' }}
                         </td>
                         <td>{{ $camp->created_at->format('d M Y') }}</td>
-                        <td>
+                        {{-- <td>
                             <a href="{{ route('lab_technician.camp.edit', encrypt($camp->id)) }}"><i class="bi bi-pencil-square"></i></a>
                             
                             <a onclick="deleteLabTechnician('{{ encrypt($camp->id) }}')" class="ps-2">
                                 <i class="bi bi-trash3"></i>
                             </a>
-                        </td>
+                        </td> --}}
                     </tr>
                 @endforeach
             </tbody>

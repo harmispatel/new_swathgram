@@ -17,8 +17,8 @@ class CamplistResource extends JsonResource
          return [
             'id'    => $this->id,
             'camp_name'  => $this->camp_name ?? null,
-            'camp_start_date' => $this->camp_start_date ?? null,
-            'camp_end_date' => $this->camp_end_date ?? null,
+            'camp_start_date' => date('d-m-Y', strtotime($this->camp_start_date)) ?? null,
+            'camp_end_date' => date('d-m-Y', strtotime($this->camp_end_date)) ?? null,
         ];
     }
 }

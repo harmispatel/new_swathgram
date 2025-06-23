@@ -41,8 +41,13 @@ class PatientController extends Controller
     public function delete(Request $request)
     {
         try {
-            $patient = Patient::find(decrypt($request->id));
-            $patient->delete();
+            $patient = Patient::findOrFail(decrypt($request->id));
+            
+            $user = User::findOrFail($patient->user_id);
+            $patient->delete();  
+            if ($user) {
+                $user->delete();
+            }
 
             return response()->json([
                 'success' => 1,

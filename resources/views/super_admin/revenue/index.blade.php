@@ -64,7 +64,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <button type="button" id="clear-btn" class="btn btn-success">Clear</button>
-                            <button type="button" class="btn btn-success ms-3">
+                             
+                            <input type="hidden" name="file_type" id="file_type" value="">
+                            <button type="button" class="btn btn-success ms-3" id="ajax-export-btn" onclick="exportExcel()">
                                 Export to Excel
                             </button>
                         </div>
@@ -173,4 +175,13 @@
         });
     }
 </script>
-@endsection
+
+
+<script>
+    function exportExcel() {
+        document.getElementById('file_type').value = 'excel';
+        document.getElementById('sort_blogs').submit();
+    }
+</script>
+
+@endsection 

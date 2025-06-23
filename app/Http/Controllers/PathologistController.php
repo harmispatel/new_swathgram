@@ -218,7 +218,21 @@ class PathologistController extends Controller
 
             // Detach from pivot table (organization_pathologist)
             $pathologist->organizations()->detach();
+
+            if (!$pathologist) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'pathologist not found',
+                ]);
+            }
+
+            $user = User::findOrFail($pathologist->user_id);
             $pathologist->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
 
             return response()->json([
                 'success' => 1,

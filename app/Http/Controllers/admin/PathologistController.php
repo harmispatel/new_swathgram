@@ -23,7 +23,8 @@ class PathologistController extends Controller
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
+        $user_id = Auth::user()->id;
+        $organizations = Organization::where('user_id',$user_id)->orderBy('id','desc')->get();
         return view('admin.pathologist.create',compact('organizations'));
     }
 
@@ -110,7 +111,8 @@ class PathologistController extends Controller
     public function edit($id)
     {
         $pathologist = Pathologist::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
+        $user_id = Auth::user()->id;
+        $organizations = Organization::where('user_id',$user_id)->orderBy('id','desc')->get();
       
         return view('admin.pathologist.edit',compact('pathologist','organizations'));
     }
@@ -233,6 +235,50 @@ class PathologistController extends Controller
             // Detach from pivot table (organization_pathologist)
             $pathologist->organizations()->detach();
             $pathologist->delete();
+
+
+              $id = decrypt($request->id);
+            $pathologist = Pathologist::findOrFail($id);
+
+            if ($pathologist->photo) {
+                $photoPath = public_path(str_replace(asset('/'), '', $pathologist->photo));
+                if (file_exists($photoPath)) {
+                    unlink($photoPath);
+                }
+            }
+
+            // Delete signature
+            if ($pathologist->signature) {
+                $signaturePath = public_path(str_replace(asset('/'), '', $pathologist->signature));
+                if (file_exists($signaturePath)) {
+                    unlink($signaturePath);
+                }
+            }
+
+            // Delete license
+            if ($pathologist->license) {
+                $licensePath = public_path(str_replace(asset('/'), '', $pathologist->license));
+                if (file_exists($licensePath)) {
+                    unlink($licensePath);
+                }
+            }
+
+            // Detach from pivot table (organization_pathologist)
+            $pathologist->organizations()->detach();
+
+            if (!$pathologist) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'pathologist not found',
+                ]);
+            }
+
+            $user = User::findOrFail($pathologist->user_id);
+            $pathologist->delete();
+
+            if ($user) {
+                $user->delete();
+            }
 
             return response()->json([
                 'success' => 1,

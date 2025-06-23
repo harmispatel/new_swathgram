@@ -43,7 +43,11 @@ class PatientController extends Controller
     {
         try {
             $patient = Patient::find(decrypt($request->id));
-            $patient->delete();
+            $user = User::find($patient->user_id);
+            $patient->delete();  
+            if ($user) {
+                $user->delete();
+            }
 
             return response()->json([
                 'success' => 1,

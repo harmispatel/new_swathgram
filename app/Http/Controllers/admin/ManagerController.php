@@ -22,7 +22,8 @@ class ManagerController extends Controller
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
+        $user_id = Auth::user()->id;
+        $organizations = Organization::where('user_id',$user_id)->orderBy('id','desc')->get();
         return view('admin.manager.create',compact('organizations'));
     }
 
@@ -95,7 +96,7 @@ class ManagerController extends Controller
     public function edit($id)
     {
         $manager = Manager::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
+        $organizations = Organization::where('user_id',Auth::user()->id)->orderBy('id','desc')->get();
         return view('admin.manager.edit',compact('manager','organizations'));
     }
 
@@ -180,7 +181,24 @@ class ManagerController extends Controller
     {
         try {
          
-            Manager::where('id',decrypt($request->id))->delete();
+             $managerId = decrypt($request->id);
+
+            $manager = Manager::findOrFail($managerId);
+
+            if (!$manager) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => 'Manager not found',
+                ]);
+            }
+
+            $user = User::findOrFail($manager->user_id);
+            $manager->delete();
+
+            if ($user) {
+                $user->delete();
+            }
+
             return response()->json([
                 'success' => 1,
                 'message' => "Manager Delete successfully",

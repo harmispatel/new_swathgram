@@ -15,7 +15,6 @@ use App\Models\Patient;
 use App\Models\Report;
 use App\Models\PackageTest;
 use App\Models\TestResult;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\CamplistResource;
 use App\Http\Resources\PackageListResource;
@@ -24,13 +23,28 @@ use App\Models\Device;
 use Carbon\Carbon;
 use App\Models\LabTechnician;
 use App\Http\Resources\PatientResource;
-
 use App\Http\Resources\QcDataResource;
+use App\Mail\ProblemReportMail;
+use App\Models\ProblemReport;
+use Illuminate\Support\Facades\{Auth, DB, Mail};
+use App\Traits\{ImageTrait, PushNotificationTrait};
 
+use App\Http\Resources\ReportResource;
+use App\Models\Department;
+use App\Models\SupportDepartment;
+use App\Models\SupportSubDepartment;
+use App\Http\Resources\TestResultResource;
+use Illuminate\Support\Facades\Validator;
+use App\Models\User;
+use App\Http\Resources\ReportsMultipleResource;
+use GuzzleHttp\Psr7\Request as Psr7Request;
 
 class CustomController extends BaseController
 {
-    public function CommanData(){
+    use ImageTrait;
+
+    public function CommanData()
+    {
         $camps = Camp::select('id','camp_name')->get();
         // $packages = Package::select('id','package_name')->get();
         // $profiles = TestProfile::select('id','name')->get();
@@ -47,25 +61,18 @@ class CustomController extends BaseController
 
     public function package()
     {
-        $packages = Package::select('id','package_name')->get();
-        return $this->sendResponse($packages, 'package list Data Get Successful', true);
+        try {
+            $packages = Package::select('id','package_name')->get();
+            return $this->sendResponse($packages, 'package list Data Get Successful', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
     }
-
-
-     public function amount(){
-    //   $packages = Package::select('id','package_name')->get();
-        $amounts = [
-                ['amount' => 100],
-                ['amount' => 200],
-                ['amount' => 500],
-            ];
-
-        return $this->sendResponse($amounts, 'list Data Get Successful', true);
-    }
-
+    
     public function getTestsByProfile()
     {
-        $profiles = TestProfile::with(['tests' => function ($query) {
+        try {
+             $profiles = TestProfile::with(['tests' => function ($query) {
                 $query->where('is_active', 1)
                     ->select('id', 'test_name','profile_id');
             }])
@@ -74,17 +81,17 @@ class CustomController extends BaseController
             ->orderBy('id', 'desc')
             ->get();
 
-        return $this->sendResponse($profiles, 'Tests Get Successfully', true);
+            return $this->sendResponse($profiles, 'Tests Get Successfully', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+       
     }
 
-   
-
-    
-    public function PatientCreate(Request $request)
+    public function patientRegister(Request $request)
     {
         try {
             $user = Auth::user();
-            dd($user);
             if (!$user) {
                 return $this->sendResponse(null, 'Unauthorized user', false);
             }
@@ -138,18 +145,79 @@ class CustomController extends BaseController
                 $tests = Test::whereIn('id', $request->test_list)->get();
                 $this->createTestResults($tests, $report, $request->age, $request->gender);
             }
-
-            // return $this->sendResponse(null, 'Patient created successfully', true);
             return $this->sendResponse(new PatientResource($patient, $request->test_list ?? []), 'Patient created successfully', true);
-
-
         } catch (\Throwable $th) {
-            return $this->sendResponse(null, $th->getMessage(), false);
+            // dd($th);
+            return $this->sendResponse(null, 'Something went wrong!', false);
         }
     }
 
 
-    private function createTestResults($tests, $report, $age, $gender) {
+    public function patientUpdate(Request $request)
+    {
+        try {
+            $patient_id = $request->patient_id;
+            $user = Auth::user();
+            if (!$user) {
+                return $this->sendResponse(null, 'Unauthorized user', false);
+            }
+
+            $lab_tech = LabTechnician::where('user_id', $user->id)->first();
+            if (!$lab_tech) {
+                return $this->sendResponse(null, 'Lab Technician not found', false);
+            }
+
+            $patient = Patient::find($patient_id);
+            $patient->user_id = $user->id;
+            if ($request->has('email')) $patient->email = $request->email;
+            if ($request->has('username')) $patient->username = $request->username;
+            if ($request->has('identity_proof_type')) $patient->identity_proof_type = $request->identity_proof_type; 
+            if ($request->has('age')) $patient->age = $request->age;
+            if ($request->has('gender')) $patient->gender = $request->gender;
+            if ($request->has('refrance_by')) $patient->refrance_by = $request->refrance_by ?? null;
+            if ($request->has('mobile_number')) $patient->mobile_number = $request->mobile_number;
+            if ($request->has('address')) $patient->address = $request->address;
+            if ($request->has('medical_history')) $patient->medical_history = $request->medical_history;
+            if ($request->has('organization_id')) $patient->organization_id = $lab_tech->organization_id;
+            if ($request->has('identity_proof_number')) $patient->identity_proof_number = $request->identity_proof_number ?: null;
+            if ($request->has('abha_address_number')) $patient->abha_address_number = $request->abha_address_number;
+            if ($request->has('abha_number')) $patient->abha_number = $request->abha_number;
+            if ($request->has('abha_address')) $patient->abha_address = $request->abha_address;
+            if ($request->has('amount')) $patient->amount = $request->amount;
+            $patient->camp_id = $request->camp_id ?? null;
+            $patient->update();
+
+            $report = null;
+            if ($request->camp_id) {
+                $camp = Camp::find($request->camp_id);
+                if ($camp) {
+                    $report = new Report();
+                    $report->camp_id = $camp->id;
+                    $report->patient_id = $patient->id;
+                    $report->pathologist_id = $camp->pathologist_id;
+                    $report->organization_id = $camp->organization_id;
+                    $report->save();
+                }
+            }
+
+            if ($request->package && $report) {
+                $package_test_ids = PackageTest::where('package_id', $request->package)->pluck('test_id');
+                $tests = Test::whereIn('id', $package_test_ids)->get();
+                $this->createTestResults($tests, $report, $request->age, $request->gender);
+            }
+
+            if ($request->test_list && $report) {
+                $tests = Test::whereIn('id', $request->test_list)->get();
+                $this->createTestResults($tests, $report, $request->age, $request->gender);
+            }
+            return $this->sendResponse(new PatientResource($patient, $request->test_list ?? []), 'Patient Updated successfully', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    private function createTestResults($tests, $report, $age, $gender) 
+    {
         foreach ($tests as $test) {
             $test_result = new TestResult();
             $test_result->report_id = $report->id;
@@ -163,7 +231,7 @@ class CustomController extends BaseController
                 $test_result->reference_range = 'child_ref_range';
             }
             $test_result->save();
-        }
+        } 
     }
 
     public function patientlist()
@@ -179,47 +247,33 @@ class CustomController extends BaseController
         }
     }
 
-    // public function changePassword(Request $request)
-    // {
-    //     $request->validate([
-    //         'old_password' => 'required',
-    //         'new_password' => 'required|min:6',
-    //         're_password'  => 'required|same:new_password',
-    //     ]);
-
-    //     $user = auth()->user();
-
-    //     if (!Hash::check($request->old_password, $user->password)) {
-    //           return $this->sendResponse(null, 'Old password does not match.', false);
-    //     }
-
-    //     $user->password = Hash::make($request->new_password);
-    //     $user->save();
-
-    //       return $this->sendResponse(true,'Password updated successfully');
-    // }
-
     public function camplist()
     {
-            $technicianId = Auth::id();
-            $camps = Camp::whereRelation('labTechnicians', 'lab_technicians.id', $technicianId)
-                            ->get();
+        try {
+            $user = Auth::user();
+            $lab_technician = LabTechnician::where('user_id',$user->id)->first();
+            $labTechnicianId = $lab_technician->user_id;
 
-            return $this->sendResponse(
-                CamplistResource::collection($camps),
-             'camp list successfully.', true);
+            $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])
+                ->whereHas('labTechnicians',function ($query) use ($labTechnicianId){
+                    $query->where('lab_technicians.user_id',$labTechnicianId);
+            })->orderBy('id','desc')->get();
 
+            return $this->sendResponse(CamplistResource::collection($camps),'camp list successfully.', true);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Something went wrong!');
+        }
     }
 
     public function packagelist()
     {
-
-        $packages=Package::get();
-        return $this->sendResponse(
-              PackageListResource::collection($packages),
-             'package list successfully.', true);
+        try {
+           $packages=Package::with('tests')->orderBy('id','desc')->get();
+           return $this->sendResponse(PackageListResource::collection($packages),'package list successfully.', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
     }
-
 
     public function searchpatient(Request $request)
     {
@@ -242,17 +296,251 @@ class CustomController extends BaseController
         ], 'Patient list fetched successfully.', true);
     }
 
-
-    public function qcdata(){
+    public function qcdata()
+    {
+        try {
+            $lt_id = Auth::user()->id;
+          
+            $qcdata = GenericQualityControl::where('lt_id',$lt_id)->with('test')->get();
+            $data = QcDataResource::collection($qcdata);
+            return $this->sendResponse($data,'Qc list fetched successfully.', true);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Something went wrong!');
+        }
         
-            $qcdata = QcDataResource::collection(
-               GenericQualityControl::with('test')->get()
-            );
-
-
-        return $this->sendResponse(
-          $qcdata,
-         'Qc list fetched successfully.', true);
     }
+
+    public function problemReport(Request $request)
+    {
+        try {
+
+            $problemReport = new ProblemReport();
+            $problemReport->user_id = Auth::user()->id;
+            $problemReport->subject = $request->subject ?? '';
+            $problemReport->description = $request->description ?? '';
+
+            $uploadedFiles = [];
+
+            if ($request->hasFile('files')) {
+                $uploadedFiles = $this->addMultipleFiles('problemreport', 'documents', $request->file('files'));
+            }
+
+            $problemReport->image = json_encode($uploadedFiles);
+            $problemReport->save();
+            $email = 'harmistest@gmail.com';
+
+            $ccEmails = ['harmistest@gmail.com', 'harmistest@gmail.com']; // Add CC emails here
+            Mail::to($email)
+                ->cc($ccEmails)
+                ->send(new ProblemReportMail($problemReport, $uploadedFiles));
+
+            return $this->sendResponse($uploadedFiles, 'Your Problem Request Sent.', true);
+        } catch (\Throwable $th) {
+            
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+
+    public function report(Request $request)
+    {
+        try {
+            $user=Auth::user();
+            $patient=Patient::where('user_id',$user->id)->with('reports.testResults.test')->get();
+
+            return $this->sendResponse(ReportResource::collection($patient),'Report list successfully.', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    public function patientByReport(Request $request)
+    {
+        try {
+            if($request->patient_id)
+            {
+                $reports = Report::with('patient', 'testResults.test')
+                                ->where('patient_id', $request->patient_id)
+                                ->get();
+
+                if($reports->isEmpty()){
+                    return $this->sendResponse(null, 'Patient Report Not Available', true);
+                }
+                return $this->sendResponse(ReportsMultipleResource::collection($reports), 'Patient Report Fetch successfully.', true);
+            }
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    public function Supportdepartments()
+    {
+        try {
+            $departments = SupportDepartment::select('id','DepartmentName','is_active')->get();
+            return $this->sendResponse($departments,'Supports fetched successfully', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    public function SupportSubdepartments(Request $request)
+    {
+        try {
+            $support_id = $request->id;
+            $sub_departments = SupportSubDepartment::where('departmentId',$support_id)->select('id','subDepartmentName','videoUrl')->get();
+
+            if ($sub_departments->isEmpty()) {
+                return $this->sendResponse(null,'subDepartment Not available', true);
+            }
+ 
+            return $this->sendResponse($sub_departments,'subDepartment fetched successfully', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    public function getTestResult(Request $request)
+    {
+        try {
+            $patient_id = $request->patient_id;
+            $report = Report::where('patient_id', $patient_id)->first();
+            if (!$report) {
+                 return $this->sendResponse(null, 'No report found for this patient.', false);
+            }
+            $test_results = TestResult::where('report_id', $report->id)->with('test')->get();
+            $patient = Patient::with('camp')->where('id',$patient_id)->first();
+
+            $data = [
+                'patient' => [
+                    'id' => $patient->id,
+                    'name' => $patient->username,
+                    'gender'       => $patient->gender === 'male' ? 'M' : ($patient->gender === 'female' ? 'F' : 'O'),  
+                    'age' => $patient->age,
+                    'patient_code' => $patient->patient_code ?? '',
+                    'camp_name' => $patient->camp->camp_name ?? '',
+                    'create_at'    => date('d-m-Y H:i', strtotime($patient->created_at)),
+                ],
+                'test_results' => $test_results->map(function ($testResult) {
+                    return [
+                        'id' => $testResult->id,
+                        'amount' => $testResult->value,
+                        'test_name' => $testResult->test->test_name ?? '',
+                        'test_code' => $testResult->test->test_code ?? '',
+                    ];
+                }),
+            ];
+
+            return $this->sendResponse($data, 'Test Result successfully', true);
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+
+    public function deleteTestResults(Request $request)
+    {
+        try {
+            $patient_id = $request->patient_id;
+
+            $report = Report::where('patient_id', $patient_id)->first();
+
+            if (!$report) {
+                return $this->sendResponse(null, 'No report found for this patient.', false);
+            }
+
+            TestResult::where('report_id', $report->id)->delete();
+
+            return $this->sendResponse(null, 'Test results deleted successfully.', true);
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }   
     
+    //edit result
+    public function updateTestResult(Request $request)
+    {
+        try {
+            $patient_id = $request->patient_id;
+            $report = Report::where('patient_id', $patient_id)->first();
+
+            if (!$report) {
+                return $this->sendResponse(null, 'No report found for this patient.', false);
+            }
+
+            foreach ($request->results as $result) {
+                TestResult::where('id', $result['id'])
+                    ->where('report_id', $report->id)
+                    ->update(['value' => $result['value']]);
+            }
+
+            return $this->sendResponse(null, 'Test results updated successfully.', true);
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+        }
+    }
+ 
+    public function updatepatient(request $request)
+    {
+         try {
+
+            $validator = Validator::make($request->all(), [
+                'username' => 'unique:users,username',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendResponse(null, $validator->errors()->first(), false);
+            }
+
+            
+            $patients =Patient::find($request->patient_id);
+            if (!$patients) {
+                return $this->sendResponse(null, 'Patient not found.', false);
+            }
+
+           $user = User::find($patients->user_id);
+            if (!$user) {
+                return $this->sendResponse(null, 'User not found.', false);
+            }
+
+            $user->update([
+                'username'=>$request->username,
+            ]);
+
+            $patients->update([
+                'username'=>$request->username,
+                'gender'=>$request->gender,
+                'age'=>$request->age
+            ]);
+            return $this->sendResponse(null, 'patient update successfully.', true);
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong!', false);
+
+        }
+        
+    }
+
+    public function deletePatient(Request $request)
+    {
+        try {
+            $patient = Patient::find($request->patient_id);
+            if (!$patient) {
+                return $this->sendResponse(null, 'Patient not found.', false);
+            }
+
+            $user = User::find($patient->user_id);
+
+            $patient->delete();
+            if ($user) {
+                $user->delete();
+            }
+
+            return $this->sendResponse(null, 'Patient deleted successfully.', true);
+
+        } catch (\Throwable $th) {
+            return $this->sendResponse(null, 'Something went wrong! ' . $th->getMessage(), false);
+        }
+    }
 }
