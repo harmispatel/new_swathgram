@@ -43,7 +43,7 @@
                     <h5 class="card-title">{{ __('Profile Details')}}</h5>
                     <div class="row mb-2">
                         <div class="col-lg-3 col-md-4 label"><b>{{__('Role')}}</b></div>
-                        <div class="col-lg-9 col-md-8">{{ ($user->role == "super_admin") ? 'Super Admin' : '' }}</div>
+                        <div class="col-lg-9 col-md-8">{{ ($user->role)}}</div>
                     </div>
                     <div class="row mb-2">
                         <div class="col-lg-3 col-md-4 label"><b>{{ __('FirstName')}}</b></div>

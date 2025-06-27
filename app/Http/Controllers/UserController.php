@@ -11,39 +11,24 @@ class UserController extends Controller
 {
     public function myProfile($id)
     {
-        if(Auth::user()->role == 1)
-        {
+      
             $data['user'] = User::where('id',decrypt($id))->first();
             return view('auth.profile.super_admin_profile',$data);
-        }
-        // else
-        // {
-        //     $data['user'] = User::with(['hasOneShop','hasOneSubscription'])->where('id',decrypt($id))->first();
-        //     return view('auth.client-profile',$data);
-        // }
+
     }
 
 
     public function editProfile($id)
     {
-        if(Auth::user()->role == 1)
-        {
             $data['user'] = User::where('id',decrypt($id))->first();
             return view('auth.profile.super_admin_profile_edit',$data);
-        }
-        // else
-        // {
-        //     $data['user'] = User::with(['hasOneShop','hasOneSubscription'])->where('id',decrypt($id))->first();
-        //     return view('auth.client-profile-edit',$data);
-        // }
     }
 
     public function updateProfile(Request $request)
     {
         $user  = User::find($request->user_id);
 
-        if(Auth::user()->role == 1)
-        {
+     
             $request->validate([
                 'firstname'             =>      'required',
                 'email'                 =>      'required|email|unique:users,email,'.$request->user_id,
@@ -77,7 +62,7 @@ class UserController extends Controller
 
             $user->update();
             return redirect()->route('admin.profile.view',encrypt($request->user_id))->with('success','Profile has been Updated SuccessFully..');
-        }
+        
     }
 
 }

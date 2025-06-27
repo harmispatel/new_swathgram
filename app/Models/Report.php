@@ -22,4 +22,10 @@ class Report extends Model
     {
         return $this->belongsTo(Organization::class, 'organization_id', 'id');
     }
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class, 'package_id');
+    }
+
 }

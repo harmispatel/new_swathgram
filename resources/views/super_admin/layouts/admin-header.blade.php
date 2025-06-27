@@ -2,7 +2,7 @@
     // UserDetails
     if (auth()->user()){
         $userID = encrypt(auth()->user()->id);
-        $userName = auth()->user()->firstname." ".auth()->user()->lastname;
+        $userName = auth()->user()->username;
         $userImage = auth()->user()->image;
         $current_route = Route::currentRouteName();
     }else{
@@ -86,7 +86,6 @@
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
               <h6>{{ $userName }}</h6>
-              <span>Super Admin</span>
             </li>
             <li>
               <hr class="dropdown-divider">

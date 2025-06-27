@@ -21,7 +21,7 @@
                         <label class="form-label">Org. Name <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="organization_name" class="form-control {{ $errors->has('organization_name') ? 'is-invalid' : '' }}" placeholder="Name">
+                        <input type="text" name="organization_name" class="form-control {{ $errors->has('organization_name') ? 'is-invalid' : '' }}" placeholder="Name" value="{{old('organization_name')}}">
                         @if($errors->has('organization_name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('organization_name') }}
@@ -36,7 +36,7 @@
                         <label class="form-label">Owner Name <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="owner_name" class="form-control {{ $errors->has('owner_name') ? 'is-invalid' : '' }}" placeholder="Enter Owner Name">
+                        <input type="text" name="owner_name" class="form-control {{ $errors->has('owner_name') ? 'is-invalid' : '' }}" placeholder="Enter Owner Name" value="{{old('owner_name')}}">
                         @if($errors->has('owner_name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('owner_name') }}
@@ -54,7 +54,7 @@
                         <label class="form-label">Email <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email">
+                        <input type="text" name="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" placeholder="Email" value="{{old('email')}}">
                         @if($errors->has('email'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('email') }}
@@ -69,10 +69,9 @@
                         <label class="form-label">Contact <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="contact" class="form-control {{ $errors->has('contact') ? 'is-invalid' : '' }}" placeholder="Contact">
+                        <input type="text" name="contact" class="form-control {{ $errors->has('contact') ? 'is-invalid' : '' }}" placeholder="Contact" value="{{old('contact')}}">
                         @if($errors->has('contact'))
-                            <div class="invalid-feedback">
-                                {{ $errors->first('contact') }}
+                            <div class="invalid-feedback"> 
                             </div>
                         @endif
                     </div>
@@ -106,7 +105,7 @@
                         <label class="form-label">Revenue Share<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="number" name="revenue_share" class="form-control {{ $errors->has('revenue_share') ? 'is-invalid' : '' }}" placeholder="Revenue Share">
+                        <input type="number" name="revenue_share" class="form-control {{ $errors->has('revenue_share') ? 'is-invalid' : '' }}" placeholder="Revenue Share" value="{{old('revenue_share')}}">
                         @if($errors->has('revenue_share'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('revenue_share') }}
@@ -124,7 +123,7 @@
                         <label class="form-label">Org. Info <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="org_info" class="form-control {{ $errors->has('org_info') ? 'is-invalid' : '' }}" placeholder="Org. Information">
+                        <input type="text" name="org_info" class="form-control {{ $errors->has('org_info') ? 'is-invalid' : '' }}" placeholder="Org. Information" value="{{old('org_info')}}">
                         @if($errors->has('org_info'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('org_info') }}
@@ -139,7 +138,7 @@
                         <label class="form-label">Org. GST / PAN</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="gst_pan_number" class="form-control {{ $errors->has('gst_pan_number') ? 'is-invalid' : '' }}" placeholder="Org. GST / PAN">
+                        <input type="text" name="gst_pan_number" class="form-control {{ $errors->has('gst_pan_number') ? 'is-invalid' : '' }}" placeholder="Org. GST / PAN" value="{{old('gst_pan_number')}}">
                         @if($errors->has('gst_pan_number'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('gst_pan_number') }}
@@ -157,7 +156,7 @@
                         <label class="form-label">Org. CIN</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="org_cin" class="form-control {{ $errors->has('org_cin') ? 'is-invalid' : '' }}" placeholder="Org. CIN">
+                        <input type="text" name="org_cin" class="form-control {{ $errors->has('org_cin') ? 'is-invalid' : '' }}" placeholder="Org. CIN" value="{{old('org_cin')}}">
                         @if($errors->has('org_cin'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('org_cin') }}
@@ -173,7 +172,7 @@
                         <label class="form-label">Org. Logo</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="file" name="org_logo" class="form-control {{ $errors->has('org_logo') ? 'is-invalid' : '' }}">
+                        <input type="file" name="org_logo" class="form-control {{ $errors->has('org_logo') ? 'is-invalid' : '' }}" value="{{old('org_logo')}}">
                         @if($errors->has('org_logo'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('org_logo') }}
@@ -233,7 +232,7 @@
                         <label class="form-label">Username <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="username" class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}" placeholder="Username">
+                        <input type="text" name="username" class="form-control {{ $errors->has('username') ? 'is-invalid' : '' }}" placeholder="Username" value="{{old('username')}}">
                         @if($errors->has('username'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('username') }}
@@ -248,7 +247,7 @@
                         <label class="form-label">Country <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="country" class="form-control {{ $errors->has('country') ? 'is-invalid' : '' }}" placeholder="Country">
+                        <input type="text" name="country" class="form-control {{ $errors->has('country') ? 'is-invalid' : '' }}" placeholder="Country" value="{{old('country')}}">
                         @if($errors->has('country'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('country') }}
@@ -266,7 +265,7 @@
                         <label class="form-label">Password <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="password" name="password" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Password">
+                        <input type="password" name="password" class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}" placeholder="Password" value="{{old('password')}}">
                         @if($errors->has('password'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('password') }}
@@ -281,7 +280,7 @@
                         <label class="form-label">State <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="state" class="form-control {{ $errors->has('state') ? 'is-invalid' : '' }}" placeholder="State">
+                        <input type="text" name="state" class="form-control {{ $errors->has('state') ? 'is-invalid' : '' }}" placeholder="State" value="{{old('state')}}">
                         @if($errors->has('state'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('state') }}
@@ -299,7 +298,7 @@
                         <label class="form-label">Pincode <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="number" name="pincode" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Pincode">
+                        <input type="number" name="pincode" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Pincode" value="{{old('pincode')}}">
                         @if($errors->has('pincode'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('pincode') }}
@@ -314,7 +313,7 @@
                         <label class="form-label">Address <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="address" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Address">
+                        <input type="text" name="address" class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" placeholder="Address" value="{{old('address')}}">
                         @if($errors->has('address'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('address') }}
@@ -379,4 +378,4 @@
 @section('custom-js')
 <script>
 </script>
-@endsection
+@endsection 

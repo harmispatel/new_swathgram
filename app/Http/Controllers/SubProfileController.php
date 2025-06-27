@@ -12,16 +12,20 @@ class SubProfileController extends Controller
 {
     public function index(Request $request)
     {
-        $sub_profiles = TestSubprofile::with('department','profile','tests')->orderBy('id','desc')->get();
-        $profiles = TestProfile::orderBy('id','desc')->get();
-        $departments = Department::where('is_active',1)->orderBy('id','desc')->get();
+         if(Auth::user()->can('test.sub-profile')){   
+            $sub_profiles = TestSubprofile::with('department','profile','tests')->orderBy('id','desc')->get();
+            $profiles = TestProfile::orderBy('id','desc')->get();
+            $departments = Department::where('is_active',1)->orderBy('id','desc')->get();
 
-        $editProfile = null;
-        if ($request->has('edit_id')) {
-            $editProfile = TestSubprofile::findOrFail(decrypt($request->edit_id));
-        }
-      
-        return view('super_admin.test_sub_profile.index', compact('sub_profiles', 'profiles', 'departments', 'editProfile'));
+            $editProfile = null;
+            if ($request->has('edit_id')) {
+                $editProfile = TestSubprofile::findOrFail(decrypt($request->edit_id));
+            }
+        
+            return view('super_admin.test_sub_profile.index', compact('sub_profiles', 'profiles', 'departments', 'editProfile'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        } 
     }
 
     public function store(Request $request)
@@ -56,26 +60,30 @@ class SubProfileController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            $test_profile = TestSubprofile::where('id', decrypt($request->id))->first();
-          
-            $test = Test::where('profile_id',$test_profile->id)->first();
-            if (!empty($test)) {
+        if(Auth::user()->can('test.sub-profile.delete')){
+            try {
+                $test_profile = TestSubprofile::where('id', decrypt($request->id))->first();
+            
+                $test = Test::where('profile_id',$test_profile->id)->first();
+                if (!empty($test)) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => "Profile Already Used In Test!",
+                    ]);
+                }
+                $test_profile->delete();
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Profile deleted successfully",
+                ]);
+            } catch (\Throwable $th) {
                 return response()->json([
                     'success' => 0,
-                    'message' => "Profile Already Used In Test!",
+                    'message' => "Internal Server Error!",
                 ]);
             }
-            $test_profile->delete();
-            return response()->json([
-                'success' => 1,
-                'message' => "Profile deleted successfully",
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 }

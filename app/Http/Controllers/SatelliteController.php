@@ -7,21 +7,31 @@ use App\Models\Device;
 use App\Models\Organization;
 use App\Models\TestResult;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SatelliteController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:satellite_data|satellite_data.show|satellite_data.map|satellite_data.delete');
+    }
 
     public function index()
     {
-        $devices = Device::with('organizations')->orderBy('id','desc')->get();
-        $organizations = $devices->pluck('organizations')
-                        ->unique('id')
-                        ->values();
-        return view('super_admin.satellite_data.index', compact('organizations'));
+        if(Auth::user()->can('satellite_data')){
+            $devices = Device::with('organizations')->orderBy('id','desc')->get();
+            $organizations = $devices->pluck('organizations')
+                            ->unique('id')
+                            ->values();
+            return view('super_admin.satellite_data.index', compact('organizations'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function show($id)
     {
+        
         $organization = Organization::find(decrypt($id));
         $devices = Device::where('organization_id', decrypt($id))->get();
         return view('super_admin.satellite_data.show',compact('devices','organization'));

@@ -9,13 +9,18 @@ use App\Models\TestProfile;
 use App\Models\TestSubprofile;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::orderBy('id','desc')->get();
-        return view('super_admin.package.index',compact('packages'));
+        if(Auth::user()->can('package')){     
+            $packages = Package::orderBy('id','desc')->get();
+            return view('super_admin.package.index',compact('packages'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function getTestsByProfile(Request $request)
@@ -70,11 +75,15 @@ class PackageController extends Controller
 
     public function create()
     {
-        $tests = Test::orderBy('id','desc')->get();
-        $test_profiles = TestProfile::all();
-        $sub_profiles = TestSubprofile::all();
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.package.create',compact('organizations','tests','test_profiles','sub_profiles'));
+        if(Auth::user()->can('package.create')){
+            $tests = Test::orderBy('id','desc')->get();
+            $test_profiles = TestProfile::all();
+            $sub_profiles = TestSubprofile::all();
+            $organizations = Organization::orderBy('id','desc')->get();
+            return view('super_admin.package.create',compact('organizations','tests','test_profiles','sub_profiles'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function store(Request $request)
@@ -113,13 +122,17 @@ class PackageController extends Controller
 
     public function edit($id)
     {
-        $package = Package::with('tests.testProfile', 'tests.testSubprofile')->find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
-        $tests = Test::orderBy('id','desc')->get();
-        $test_profiles = TestProfile::all();
-        $sub_profiles = TestSubprofile::all();
-      
-        return view('super_admin.package.edit',compact('package','organizations','tests','test_profiles','sub_profiles'));
+        if(Auth::user()->can('package.edit')){    
+            $package = Package::with('tests.testProfile', 'tests.testSubprofile')->find(decrypt($id));
+            $organizations = Organization::orderBy('id','desc')->get();
+            $tests = Test::orderBy('id','desc')->get();
+            $test_profiles = TestProfile::all();
+            $sub_profiles = TestSubprofile::all();
+        
+            return view('super_admin.package.edit',compact('package','organizations','tests','test_profiles','sub_profiles'));
+         } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        } 
     }
 
     public function update(Request $request)
@@ -164,30 +177,34 @@ class PackageController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            $package = Package::find(decrypt($request->id));
-            if ($package->camps()->count() > 0) {
+        if(Auth::user()->can('package.delete')){
+            try {
+                $package = Package::find(decrypt($request->id));
+                if ($package->camps()->count() > 0) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => "Cannot delete: Package is assigned to camps.",
+                    ]);
+                }
+
+                $package->organizations()->detach();
+                $package->tests()->detach();
+                $package->delete();
+
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Package Delete successfully",
+                ]);
+
+            } catch (\Throwable $th) {
+                dd($th);
                 return response()->json([
                     'success' => 0,
-                    'message' => "Cannot delete: Package is assigned to camps.",
+                    'message' => "Internal Server Error!",
                 ]);
             }
-
-             $package->organizations()->detach();
-             $package->tests()->detach();
-            $package->delete();
-
-            return response()->json([
-                'success' => 1,
-                'message' => "Package Delete successfully",
-            ]);
-
-        } catch (\Throwable $th) {
-            dd($th);
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+         } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 }

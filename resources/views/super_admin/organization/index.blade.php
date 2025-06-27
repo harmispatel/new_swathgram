@@ -29,8 +29,9 @@
                             <td>{{ $organization->contact }}</td>
                             <td>{{ $organization->created_at->format('d M Y') }}</td>
                             <td>
+                            @can('organization')
                                 <a href="{{ route('organization.edit', encrypt($organization->id)) }}"><i class="bi bi-pencil-square"></i></a>
-                                
+                             @endcan   
                                 <a onclick="deleteOrganization('{{ encrypt($organization->id) }}')" class="ps-2">
                                     <i class="bi bi-trash3"></i>
                                 </a>

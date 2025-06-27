@@ -1,4 +1,4 @@
-@extends('admin.layouts.admin-layout')
+@extends('super_admin.layouts.admin-layout')
 @section('title', 'SUPER ADMINS - SWATHGRAM')
 @section('content')
 

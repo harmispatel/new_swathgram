@@ -3,49 +3,51 @@
 @section('content')
 
 <section class="section show-section device mt-3">
-    <div class="addbutton">
-        <a href="{{ route('device.create') }}" class="btn btn-primary">Add Device</a>
-    </div> 
-    <div class="row">
-        <table id="device_table" class="table table-striped pt-2">
-            <thead>
-                <tr>
-                    <th>Lab Id/UID</th>
-                    <th>Device Serial No.</th>
-                    <th>Camp</th>
-                    <th>Organization Name</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach ($devices as $device)
+    <div class="container">
+        <div class="addbutton">
+            <a href="{{ route('device.create') }}" class="btn btn-primary">Add Device</a>
+        </div> 
+        <div class="row">
+            <table id="device_table" class="table table-striped pt-2">
+                <thead>
                     <tr>
-                        <td>{{ $device->device_code }}</td>
-                        <td>{{ $device->device_serial }}</td>
-                        <td>
-                             @php
-                                $campNames = $device->organizations && $device->organizations->camps
-                                    ? $device->organizations->camps->pluck('camp_name')->toArray()
-                                    : [];
-                            @endphp
-
-                            {{ count($campNames) ? implode(', ', $campNames) : '  -  ' }} 
-                        </td>
-                        <td>{{ isset($device->organizations) ? $device->organizations->organization_name : '' }}</td>
-                        <td>{{ $device->status }}</td>
-                        <td>
-                            <a href="{{ route('device.edit', encrypt($device->id)) }}"><i class="bi bi-pencil-square"></i></a>
-                            
-                            <a onclick="deleteDevice('{{ encrypt($device->id) }}')" class="ps-2">
-                                <i class="bi bi-trash3"></i>
-                            </a>
-                        </td>
+                        <th>Lab Id/UID</th>
+                        <th>Device Serial No.</th>
+                        <th>Camp</th>
+                        <th>Organization Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                    @foreach ($devices as $device)
+                        <tr>
+                            <td>{{ $device->device_code }}</td>
+                            <td>{{ $device->device_serial }}</td>
+                            <td>
+                                @php
+                                    $campNames = $device->organizations && $device->organizations->camps
+                                        ? $device->organizations->camps->pluck('camp_name')->toArray()
+                                        : [];
+                                @endphp
+
+                                {{ count($campNames) ? implode(', ', $campNames) : '  -  ' }} 
+                            </td>
+                            <td>{{ isset($device->organizations) ? $device->organizations->organization_name : '' }}</td>
+                            <td>{{ $device->status }}</td>
+                            <td>
+                                <a href="{{ route('device.edit', encrypt($device->id)) }}"><i class="bi bi-pencil-square"></i></a>
+                                
+                                <a onclick="deleteDevice('{{ encrypt($device->id) }}')" class="ps-2">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 

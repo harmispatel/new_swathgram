@@ -78,7 +78,6 @@ class CustomController extends BaseController
             }])
             ->where('test_type_active', 1)
             ->select('id', 'name')
-            ->orderBy('id', 'desc')
             ->get();
 
             return $this->sendResponse($profiles, 'Tests Get Successfully', true);
@@ -100,12 +99,23 @@ class CustomController extends BaseController
             if (!$lab_tech) {
                 return $this->sendResponse(null, 'Lab Technician not found', false);
             }
+           
+            $identityProofMap = [
+                'Passport'        => 'passport',
+                'Driving License' => 'driver_license',
+                'Aadhar Number'   => 'national_id',
+                'PAN card'        => 'pan_card',
+                'Voter ID'        => 'voter_id',
+                'Other Govt. ID'  => 'other',
+            ];
+
+            $identity_proof_type_request = $request->identity_proof_type;
 
             $patient = new Patient();
             $patient->user_id = $user->id;
             $patient->email = $request->email;
             $patient->username = $request->username;
-            $patient->identity_proof_type = $request->identity_proof_type; 
+            $patient->identity_proof_type = $identityProofMap[$identity_proof_type_request] ?? '';
             $patient->age = $request->age;
             $patient->gender = $request->gender;
             $patient->refrance_by = $request->refrance_by ?? null;
@@ -120,7 +130,10 @@ class CustomController extends BaseController
             $patient->abha_number = $request->abha_number;
             $patient->abha_address = $request->abha_address;
             $patient->amount = $request->amount;
+            $patient->package_id=$request->package;
+        
             $patient->save(); 
+           
 
             $report = null;
             if ($request->camp_id) {
@@ -134,7 +147,6 @@ class CustomController extends BaseController
                     $report->save();
                 }
             }
-
             if ($request->package && $report) {
                 $package_test_ids = PackageTest::where('package_id', $request->package)->pluck('test_id');
                 $tests = Test::whereIn('id', $package_test_ids)->get();
@@ -147,7 +159,6 @@ class CustomController extends BaseController
             }
             return $this->sendResponse(new PatientResource($patient, $request->test_list ?? []), 'Patient created successfully', true);
         } catch (\Throwable $th) {
-            // dd($th);
             return $this->sendResponse(null, 'Something went wrong!', false);
         }
     }
@@ -185,6 +196,7 @@ class CustomController extends BaseController
             if ($request->has('abha_address')) $patient->abha_address = $request->abha_address;
             if ($request->has('amount')) $patient->amount = $request->amount;
             $patient->camp_id = $request->camp_id ?? null;
+            $patient->package_id=$request->package;
             $patient->update();
 
             $report = null;
@@ -238,7 +250,7 @@ class CustomController extends BaseController
     {
         try {
             $user_id=Auth::user()->id;
-            $patients = Patient::where('user_id',$user_id)->with('camp', 'reports.testResults.test')->get();
+            $patients = Patient::where('user_id',$user_id)->with('package','camp', 'reports.testResults.test')->get();
             return new PatientCollection($patients);
         } 
         catch (\Throwable $th) 
@@ -330,9 +342,9 @@ class CustomController extends BaseController
             $email = 'harmistest@gmail.com';
 
             $ccEmails = ['harmistest@gmail.com', 'harmistest@gmail.com']; // Add CC emails here
-            Mail::to($email)
-                ->cc($ccEmails)
-                ->send(new ProblemReportMail($problemReport, $uploadedFiles));
+            // Mail::to($email)
+            //     ->cc($ccEmails)
+            //     ->send(new ProblemReportMail($problemReport, $uploadedFiles));
 
             return $this->sendResponse($uploadedFiles, 'Your Problem Request Sent.', true);
         } catch (\Throwable $th) {

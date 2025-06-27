@@ -25,7 +25,7 @@
                         <label class="form-label">Camp/Static Lab<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="camp_name" class="form-control {{ $errors->has('camp_name') ? 'is-invalid' : '' }}" placeholder="Camp Name">
+                        <input type="text" name="camp_name" class="form-control {{ $errors->has('camp_name') ? 'is-invalid' : '' }}" placeholder="Camp Name" value="{{old('camp_name')}}">
                         @if($errors->has('camp_name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('camp_name') }}
@@ -122,7 +122,7 @@
                          <select name="lab_technician[]" id="lab_technician" class="form-control {{ $errors->has('lab_technician') ? 'is-invalid' : '' }}" multiple>
                             <option value="">Select Lab Technician</option>
                             @foreach ($lab_technicians as $lab_technician)
-                                <option value="{{ $lab_technician->user_id }}">{{ $lab_technician->username }}</option>
+                                <option value="{{ $lab_technician->id }}">{{ $lab_technician->username }}</option>
                             @endforeach
                         </select>
                         @if($errors->has('lab_technician'))
@@ -211,7 +211,7 @@
                         <label class="form-label">Address <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="address" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Address">
+                        <input type="text" name="address" class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" placeholder="Address" value="{{old('address')}}">
                         @if($errors->has('address'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('address') }}
@@ -226,7 +226,7 @@
                         <label class="form-label">State <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="state" class="form-control {{ $errors->has('state') ? 'is-invalid' : '' }}" placeholder="State">
+                        <input type="text" name="state" class="form-control {{ $errors->has('state') ? 'is-invalid' : '' }}" placeholder="State" value="{{old('state')}}">
                         @if($errors->has('state'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('state') }}
@@ -244,7 +244,7 @@
                         <label class="form-label">City<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="city" class="form-control {{ $errors->has('city') ? 'is-invalid' : '' }}" placeholder="city">
+                        <input type="text" name="city" class="form-control {{ $errors->has('city') ? 'is-invalid' : '' }}" placeholder="city" value="{{old('city')}}">
                         @if($errors->has('city'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('city') }}
@@ -259,7 +259,7 @@
                         <label class="form-label">pincode <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="pincode" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Pincode">
+                        <input type="text" name="pincode" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="Pincode" value="{{old('pincode')}}">
                         @if($errors->has('pincode'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('pincode') }}
@@ -286,7 +286,7 @@
                         <label class="form-label">To<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="to_email" class="form-control {{ $errors->has('pincode') ? 'is-invalid' : '' }}" placeholder="To">
+                        <input type="text" name="to_email" class="form-control {{ $errors->has('to_email') ? 'is-invalid' : '' }}" placeholder="To" value="{{old('to_email')}}">
                         @if($errors->has('to_email'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('to_email') }}
@@ -301,7 +301,7 @@
                         <label class="form-label">CC <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="cc_email" class="form-control {{ $errors->has('cc_email') ? 'is-invalid' : '' }}" placeholder="CC">
+                        <input type="text" name="cc_email" class="form-control {{ $errors->has('cc_email') ? 'is-invalid' : '' }}" placeholder="CC" value="{{old('cc_email')}}">
                         @if($errors->has('cc_email'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('cc_email') }}
@@ -473,7 +473,7 @@
 
                 // 400 x 73
                 // if (width === 402 && height === 82) {
-                if (width === 402 && height === 51) {
+                if (width === 400 && height === 49) {
                     $('#preview_report_footer_image').attr('src', objectUrl);
                 } else {
                     alert("Footer image must be exactly 2488px wide and between 450px to 600px tall.");

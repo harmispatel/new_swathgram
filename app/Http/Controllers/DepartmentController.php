@@ -4,18 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DepartmentController extends Controller
 {
+
+    //   Route::controller(DepartmentController::class)->group(function () {
+    //         Route::get('departments','index')->name('department');
+    //         Route::get('department/create','create')->name('department.create');
+    //         Route::post('department/store','store')->name('department.store');
+    //         Route::post('department/delete','delete')->name('department.delete');
+    //     });
+
     public function index(Request $request)
     {
-        $departments = Department::with('tests')->orderBy('id','desc')->get();
-        $editDepartment = null;
+        if (Auth::user()->can('department')) {
 
-        if ($request->has('edit_id')) {
-            $editDepartment = Department::findOrFail(decrypt($request->edit_id));
+            $departments = Department::with('tests')->orderBy('id','desc')->get();
+            $editDepartment = null;
+
+            if ($request->has('edit_id')) {
+                $editDepartment = Department::findOrFail(decrypt($request->edit_id));
+            }
+            return view('super_admin.department.index', compact('departments', 'editDepartment'));
         }
-        return view('super_admin.department.index', compact('departments', 'editDepartment'));
+        else {
+            return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function store(Request $request)
@@ -43,6 +58,7 @@ class DepartmentController extends Controller
 
     public function delete(Request $request)
     {
+        
         try {
             $patient = Department::find(decrypt($request->id));
             $patient->delete();

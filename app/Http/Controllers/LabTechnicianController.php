@@ -9,19 +9,35 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class LabTechnicianController extends Controller
 {
     public function index()
     {
-        $lab_technicians = LabTechnician::with('organizations.camps')->orderBy('id','desc')->get();
-        return view('super_admin.lab_technician.index',compact('lab_technicians'));
+        if (Auth::user()->can('lab_technician')) {
+            $lab_technicians = LabTechnician::with('organizations.camps')->orderBy('id','desc')->get();
+            return view('super_admin.lab_technician.index',compact('lab_technicians'));
+        }
+        else{
+            return redirect()->back()->with('error','You have no rights for this action!');      
+        }
     }
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.lab_technician.create',compact('organizations'));
+        if (Auth::user()->can('lab_technician.create')) {
+            $user = Auth::user();
+            if($user->role == '2'){
+                $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+            }else{
+                $organizations = Organization::orderBy('id','desc')->get();
+            }
+            return view('super_admin.lab_technician.create',compact('organizations'));
+        }
+        else{
+            return redirect()->back()->with('error','You have no rights for this action!');      
+        }
     }
 
     public function store(Request $request)
@@ -83,9 +99,12 @@ class LabTechnicianController extends Controller
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
             'phone'=>$request->contact,
+            'image' => $photo,
             'role'=>5,
         ]);
 
+        $role = Role::where('id',$user->role)->first();
+        $user->assignRole($role->name);
 
         $lab_technician = new LabTechnician();
         $lab_technician->user_id = $user->id;
@@ -114,10 +133,20 @@ class LabTechnicianController extends Controller
 
     public function edit($id)
     {
-        $lab_technician = LabTechnician::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
-      
-        return view('super_admin.lab_technician.edit',compact('lab_technician','organizations'));
+        if (Auth::user()->can('lab_technician.edit')) {
+
+            $lab_technician = LabTechnician::find(decrypt($id));
+            $user = Auth::user();
+            if($user->role == '2'){
+                $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+            }else{
+                $organizations = Organization::orderBy('id','desc')->get();
+            }
+            return view('super_admin.lab_technician.edit',compact('lab_technician','organizations'));
+        }
+        else{
+            return redirect()->back()->with('error','You have no rights for this action!');      
+        }
     }
 
     public function update(Request $request)
@@ -199,29 +228,30 @@ class LabTechnicianController extends Controller
     public function delete(Request $request)
     {
         try {
- 
-           $labtechnicianId=decrypt($request->id);
+            if (Auth::user()->can('lab_technician.delete')) {
 
-            $lab_technician=LabTechnician::findOrFail($labtechnicianId);
+                $labtechnicianId=decrypt($request->id);
+                $lab_technician=LabTechnician::findOrFail($labtechnicianId);
+                if (!$lab_technician) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'Lab Technician not found',
+                    ]);
+                }
 
-             if (!$lab_technician) {
+                $user = User::findOrFail($lab_technician->user_id);
+                $lab_technician->delete();
+                if ($user) {
+                    $user->delete();
+                }
                 return response()->json([
-                    'success' => 0,
-                    'message' => 'Lab Technician not found',
+                    'success' => 1,
+                    'message' => "Lab Technician Delete successfully",
                 ]);
+             }
+            else{
+                return redirect()->back()->with('error','You have no rights for this action!');      
             }
-
-             $user = User::findOrFail($lab_technician->user_id);
-             $lab_technician->delete();
-
-            if ($user) {
-                $user->delete();
-            }
-
-            return response()->json([
-                'success' => 1,
-                'message' => "Lab Technician Delete successfully",
-            ]);
 
         } catch (\Throwable $th) {
             return response()->json([

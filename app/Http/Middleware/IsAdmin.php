@@ -21,7 +21,11 @@ class IsAdmin
          if(Auth::user()->role == 2)
         {
             return $next($request);
+        }else{
+             
+            return redirect('superadmin/dashboard')->with('error',"You don't have  admin access.");
         }
+        
     }
 }
 

@@ -68,7 +68,7 @@
                         <label class="form-label">Lab ID/UID <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="device_code" class="form-control {{ $errors->has('device_code') ? 'is-invalid' : '' }}" placeholder="LAB9999AHXXXX">
+                        <input type="text" name="device_code" class="form-control {{ $errors->has('device_code') ? 'is-invalid' : '' }}" placeholder="LAB9999AHXXXX" value="{{old('device_code')}}">
                         @if($errors->has('device_code'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('device_code') }}
@@ -83,7 +83,7 @@
                         <label class="form-label">Product Details<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="device_detail" class="form-control {{ $errors->has('device_detail') ? 'is-invalid' : '' }}" placeholder="Product Details">
+                        <input type="text" name="device_detail" class="form-control {{ $errors->has('device_detail') ? 'is-invalid' : '' }}" placeholder="Product Details" value="{{old('device_detail')}}">
                         @if($errors->has('device_detail'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('device_detail') }}
@@ -101,7 +101,7 @@
                         <label class="form-label">Lab S.N. <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="device_serial" class="form-control {{ $errors->has('device_serial') ? 'is-invalid' : '' }}" placeholder="ACC/ML/XXXXX">
+                        <input type="text" name="device_serial" class="form-control {{ $errors->has('device_serial') ? 'is-invalid' : '' }}" placeholder="ACC/ML/XXXXX" value="{{old('device_serial')}}">
                         @if($errors->has('device_serial'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('device_serial') }}

@@ -22,7 +22,7 @@
             <div class="row mt-5">
                 <div class="col-md-6">
                     <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input type="text" name="test_name" class="form-control {{ $errors->has('test_name') ? 'is-invalid' : '' }}" placeholder="Test Name">
+                    <input type="text" name="test_name" class="form-control {{ $errors->has('test_name') ? 'is-invalid' : '' }}" placeholder="Test Name" value="{{old('test_name')}}">
                     @if($errors->has('test_name'))
                         <div class="invalid-feedback">
                             {{ $errors->first('test_name') }}
@@ -33,7 +33,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label">Test Code <span class="text-danger">*</span></label>
-                            <input type="text" name="test_code" class="form-control {{ $errors->has('test_code') ? 'is-invalid' : '' }}" placeholder="Test Code">
+                            <input type="text" name="test_code" class="form-control {{ $errors->has('test_code') ? 'is-invalid' : '' }}" placeholder="Test Code" value="{{old('test_code')}}">
                             @if($errors->has('test_code'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('test_code') }}
@@ -42,7 +42,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Test Unit <span class="text-danger">*</span></label>
-                            <input type="text" name="unit" class="form-control {{ $errors->has('unit') ? 'is-invalid' : '' }}" placeholder="Test Unit">
+                            <input type="text" name="unit" class="form-control {{ $errors->has('unit') ? 'is-invalid' : '' }}" placeholder="Test Unit" value="{{old('unit')}}">
                             @if($errors->has('unit'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('unit') }}
@@ -72,7 +72,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label">Test Price <span class="text-danger">*</span></label>
-                            <input type="number" name="price" class="form-control {{ $errors->has('price') ? 'is-invalid' : '' }}" placeholder="Test Price">
+                            <input type="number" name="price" class="form-control {{ $errors->has('price') ? 'is-invalid' : '' }}" placeholder="Test Price" value="{{old('price')}}">
                             @if($errors->has('price'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('price') }}
@@ -166,7 +166,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label">Test Serial Number <span class="text-danger">*</span></label>
-                            <input type="text" name="test_serial_number" class="form-control {{ $errors->has('test_serial_number') ? 'is-invalid' : '' }}" placeholder="Serial Number">
+                            <input type="text" name="test_serial_number" class="form-control {{ $errors->has('test_serial_number') ? 'is-invalid' : '' }}" placeholder="Serial Number" value="{{old('test_serial_number')}}">
                             @if($errors->has('test_serial_number'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('test_serial_number') }}
@@ -175,7 +175,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Test Method <span class="text-danger">*</span></label>
-                            <input type="text" name="test_method" class="form-control {{ $errors->has('test_method') ? 'is-invalid' : '' }}">
+                            <input type="text" name="test_method" class="form-control {{ $errors->has('test_method') ? 'is-invalid' : '' }}" value="{{old('test_method')}}">
 
                             @if($errors->has('test_method'))
                                 <div class="invalid-feedback">
@@ -203,7 +203,7 @@
                     <label class="form-label">Bio ref. range (Male) <span class="text-danger">*</span></label>
                     <div class="row">
                         <div class="col-md-4 pe-1">
-                            <input type="number" name="male_lower_range" class="form-control {{ $errors->has('male_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound">
+                            <input type="number" name="male_lower_range" class="form-control {{ $errors->has('male_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound" value="{{old('male_lower_range')}}">
                             @if($errors->has('male_lower_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('male_lower_range') }}
@@ -211,7 +211,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1 pe-1">
-                            <input type="number" name="male_upper_range" class="form-control {{ $errors->has('male_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound">
+                            <input type="number" name="male_upper_range" class="form-control {{ $errors->has('male_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound" value="{{old('male_upper_range')}}">
                             @if($errors->has('male_upper_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('male_upper_range') }}
@@ -219,7 +219,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1">
-                            <input type="number" name="male_preview" class="form-control {{ $errors->has('male_preview') ? 'is-invalid' : '' }}" placeholder="Preview">
+                            <input type="number" name="male_preview" class="form-control {{ $errors->has('male_preview') ? 'is-invalid' : '' }}" placeholder="Preview" value="{{old('male_preview')}}">
                             @if($errors->has('male_preview'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('male_preview') }}
@@ -232,7 +232,7 @@
                     <label class="form-label">Bio ref. range (Child)<span class="text-danger">*</span></label>
                     <div class="row">
                         <div class="col-md-4 pe-1">
-                            <input type="number" name="child_lower_range" class="form-control {{ $errors->has('child_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound">
+                            <input type="number" name="child_lower_range" class="form-control {{ $errors->has('child_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound" value="{{old('child_lower_range')}}">
                             @if($errors->has('child_lower_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('child_lower_range') }}
@@ -240,7 +240,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1 pe-1">
-                            <input type="number" name="child_upper_range" class="form-control {{ $errors->has('child_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound">
+                            <input type="number" name="child_upper_range" class="form-control {{ $errors->has('child_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound" value="{{old('child_upper_range')}}">
                             @if($errors->has('child_upper_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('child_upper_range') }}
@@ -248,7 +248,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1">
-                            <input type="number" name="child_preview" class="form-control {{ $errors->has('child_preview') ? 'is-invalid' : '' }}" placeholder="Preview">
+                            <input type="number" name="child_preview" class="form-control {{ $errors->has('child_preview') ? 'is-invalid' : '' }}" placeholder="Preview" value="{{old('child_preview')}}">
                             @if($errors->has('child_preview'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('child_preview') }}
@@ -264,7 +264,7 @@
                     <label class="form-label">Bio ref. range (Female)<span class="text-danger">*</span></label>
                     <div class="row">
                         <div class="col-md-4 pe-1">
-                            <input type="number" name="female_lower_range" class="form-control {{ $errors->has('female_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound">
+                            <input type="number" name="female_lower_range" class="form-control {{ $errors->has('female_lower_range') ? 'is-invalid' : '' }}" placeholder="Lower Bound" value="{{old('female_lower_range')}}">
                             @if($errors->has('female_lower_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('female_lower_range') }}
@@ -272,7 +272,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1 pe-1">
-                            <input type="number" name="female_upper_range" class="form-control {{ $errors->has('female_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound">
+                            <input type="number" name="female_upper_range" class="form-control {{ $errors->has('female_upper_range') ? 'is-invalid' : '' }}" placeholder="Upper Bound" value="{{old('female_upper_range')}}">
                             @if($errors->has('female_upper_range'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('female_upper_range') }}
@@ -280,7 +280,7 @@
                             @endif
                         </div>
                         <div class="col-md-4 ps-1">
-                            <input type="number" name="female_preview" class="form-control {{ $errors->has('female_preview') ? 'is-invalid' : '' }}" placeholder="Preview">
+                            <input type="number" name="female_preview" class="form-control {{ $errors->has('female_preview') ? 'is-invalid' : '' }}" placeholder="Preview" value="{{old('female_preview')}}">
                             @if($errors->has('female_preview'))
                                 <div class="invalid-feedback">
                                     {{ $errors->first('female_preview') }}

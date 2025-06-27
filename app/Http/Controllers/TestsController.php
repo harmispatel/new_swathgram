@@ -7,21 +7,30 @@ use App\Models\Test;
 use App\Models\TestProfile;
 use App\Models\TestSubprofile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TestsController extends Controller
 {
     public function index()
     {
-        $tests = Test::with('testProfile','testSubprofile','department')->orderBy('id','desc')->get();
-        return view('super_admin.tests.index',compact('tests'));
+        if(Auth::user()->can('test')){
+            $tests = Test::with('testProfile','testSubprofile','department')->orderBy('id','desc')->get();
+            return view('super_admin.tests.index',compact('tests'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }      
     }
 
     public function create()
     {
-        $departments = Department::orderBy('id','desc')->get();
-        $profiles = TestProfile::with('department')->orderBy('id','desc')->get();
-        $sub_profiles = TestSubprofile::with('department','profile')->orderBy('id','desc')->get();
-        return view('super_admin.tests.create',compact('departments','profiles','sub_profiles'));
+        if(Auth::user()->can('test.create')){
+            $departments = Department::orderBy('id','desc')->get();
+            $profiles = TestProfile::with('department')->orderBy('id','desc')->get();
+            $sub_profiles = TestSubprofile::with('department','profile')->orderBy('id','desc')->get();
+            return view('super_admin.tests.create',compact('departments','profiles','sub_profiles'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function store(Request $request)
@@ -88,11 +97,15 @@ class TestsController extends Controller
 
     public function edit($id)
     {
-        $test = Test::with('department')->find(decrypt($id));
-        $departments = Department::orderBy('id','desc')->get();
-        $profiles = TestProfile::with('department')->orderBy('id','desc')->get();
-        $sub_profiles = TestSubprofile::with('department','profile')->orderBy('id','desc')->get();
-        return view('super_admin.tests.edit',compact('test','departments','profiles','sub_profiles'));
+        if(Auth::user()->can('test.edit')){
+            $test = Test::with('department')->find(decrypt($id));
+            $departments = Department::orderBy('id','desc')->get();
+            $profiles = TestProfile::with('department')->orderBy('id','desc')->get();
+            $sub_profiles = TestSubprofile::with('department','profile')->orderBy('id','desc')->get();
+            return view('super_admin.tests.edit',compact('test','departments','profiles','sub_profiles'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function update(Request $request)
@@ -161,17 +174,21 @@ class TestsController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            Test::where('id',decrypt($request->id))->delete();
-            return response()->json([
-                'success' => 1,
-                'message' => "Test Delete successfully",
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+        if(Auth::user()->can('test.delete')){
+            try {
+                Test::where('id',decrypt($request->id))->delete();
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Test Delete successfully",
+                ]);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'success' => 0,
+                    'message' => "Internal Server Error!",
+                ]);
+            }
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 }

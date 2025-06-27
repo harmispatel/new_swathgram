@@ -4,6 +4,13 @@
 
 <section class="section show-section patients mt-3">
     <div class="container">
+
+        @can('patient.create')
+            <div class="addbutton">
+                <a href="{{ route('patient.create') }}" class="btn btn-primary">Add Patients</a>
+            </div>  
+        @endcan
+    
         <form id="sort_blogs" action="{{ route('patient.report') }}" method="GET">
             <div class="row">
                 {{-- Organization --}}
@@ -197,14 +204,13 @@
                                 {{ number_format($totalAmount, 2) }}
                             </td>
                             <td>{{ $patient->created_at->format('d-m-Y H:i') }}</td>
-                            {{-- @if ($patient->reports->last()->status == "draft")
+                            @if ($patient->reports->last()->status == "draft")
                                 <td><span class="pending-report">Pending</span></td>
                             @elseif ($patient->reports->last()->status == "approved")
                                  <td><span class="pending-approved">Approved</span></td>
                             @else
                                 <td><span class="pending-rejected">Rejected</span></td>
-                            @endif --}}
-                            <td></td>
+                            @endif
                             <td>
                                 <a onclick="deletePatient('{{ encrypt($patient->id) }}')" class="ps-2">
                                     <i class="bi bi-trash3"></i>

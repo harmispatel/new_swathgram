@@ -9,39 +9,62 @@ use App\Models\Organization;
 use App\Models\Package;
 use App\Models\Pathologist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('permission:camp|camp.create|camp.edit|camp.update|camp.delete');
+    //     $this->middleware('permission:camp.create')->only(['create', 'store']);
+    //     $this->middleware('permission:camp.edit')->only(['edit', 'update']);
+    //     $this->middleware('permission:camp.delete')->only(['delete']);
+    // }
+
     public function index()
     {
-        $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])->orderBy('id','desc')->get();
-        return view('super_admin.camp.index',compact('camps'));
+        if (Auth::user()->can('camp')) {
+            $user = Auth::user();
+            if($user->role == "5"){
+                $lab_technician = LabTechnician::where('user_id',$user->id)->first();
+                $labTechnicianId = $lab_technician->user_id;
+
+                $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])
+                    ->whereHas('labTechnicians',function ($query) use ($labTechnicianId){
+                        $query->where('lab_technicians.user_id',$labTechnicianId);
+                })->orderBy('id','desc')->get();
+            }else{
+                $camps = Camp::with(['organizations', 'labTechnicians', 'pathologist'])->orderBy('id','desc')->get();
+            }
+            return view('super_admin.camp.index',compact('camps'));
+        }else{
+            return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function create()
     {  
-        $organizations = Organization::orderBy('id','desc')->get();
-        $pathologists = Pathologist::orderBy('id','desc')->get();
-        $lab_technicians = LabTechnician::orderBy('id','desc')->get();
-        $packages = Package::where('is_active',1)->orderBy('id','desc')->get();
-        return view('super_admin.camp.create',compact('organizations','pathologists','lab_technicians','packages'));
+        if (Auth::user()->can('camp.create')) {
+            $organizations = Organization::orderBy('id','desc')->get();
+            $pathologists = Pathologist::orderBy('id','desc')->get();
+            $lab_technicians = LabTechnician::orderBy('id','desc')->get();
+            $packages = Package::where('is_active',1)->orderBy('id','desc')->get();
+            return view('super_admin.camp.create',compact('organizations','pathologists','lab_technicians','packages'));
+        }else{
+            return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function getDevices(Request $request)
     {
-        // try {
-       
-            $devices = Device::where('organization_id', $request->organization_id)->get(['id', 'device_code']);
-            return response()->json($devices);
-        // } catch (\Throwable $th) {
-        //     dd($th);
-        // }
-        
+        $devices = Device::where('organization_id', $request->organization_id)->get(['id', 'device_code']);
+        return response()->json($devices);
     }
 
     public function store(Request $request)
     {
-        
+        try {
+          
             $validated = $request->validate([
                 'camp_name' => 'required',
                 'organization_type' => 'required',
@@ -105,27 +128,32 @@ class CampController extends Controller
             $camp->save();
 
             $camp->labTechnicians()->sync($request->lab_technician);
-
-
-            
             return redirect()->route('camp')->with('success', 'Camp created successfully.'); 
-            
-        
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th);
+        }
     }
 
     public function edit($id)
     {
-        $camp = Camp::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
-        $pathologists = Pathologist::orderBy('id','desc')->get();
-        $lab_technicians = LabTechnician::orderBy('id','desc')->get();
-        $packages = Package::where('is_active',1)->orderBy('id','desc')->get();
-      
-        $devices = [];
-        if ($camp->organization_id) {
-            $devices = Device::where('organization_id', $camp->organization_id)->get();
+        if (Auth::user()->can('camp.edit')) {
+
+            $camp = Camp::find(decrypt($id));
+            $organizations = Organization::orderBy('id','desc')->get();
+            $pathologists = Pathologist::orderBy('id','desc')->get();
+            $lab_technicians = LabTechnician::orderBy('id','desc')->get();
+            $packages = Package::where('is_active',1)->orderBy('id','desc')->get();
+        
+            $devices = [];
+            if ($camp->organization_id) {
+                $devices = Device::where('organization_id', $camp->organization_id)->get();
+            }
+            return view('super_admin.camp.edit',compact('camp','pathologists','organizations','lab_technicians','packages','devices'));
+        }else {
+            return redirect()->back()->with('error','You have no rights for this action!');
         }
-        return view('super_admin.camp.edit',compact('camp','pathologists','organizations','lab_technicians','packages','devices'));
     }
 
     public function update(Request $request)
@@ -196,30 +224,33 @@ class CampController extends Controller
     public function delete(Request $request)
     {
         try {
-         
-            $camp = Camp::find(decrypt($request->id));
+            if (Auth::user()->can('camp.delete')) {
+                $camp = Camp::find(decrypt($request->id));
 
-            // Delete header image
-            if (!empty($camp->report_header_image)) {
-                $headerPath = public_path('super_admin_uploads/camp_header_image/' . $camp->report_header_image);
-                if (file_exists($headerPath)) {
-                    unlink($headerPath);
+                // Delete header image
+                if (!empty($camp->report_header_image)) {
+                    $headerPath = public_path('super_admin_uploads/camp_header_image/' . $camp->report_header_image);
+                    if (file_exists($headerPath)) {
+                        unlink($headerPath);
+                    }
                 }
-            }
 
-            // Delete footer image
-            if (!empty($camp->report_footer_image)) {
-                $footerPath = public_path('super_admin_uploads/camp_footer_image/' . $camp->report_footer_image);
-                if (file_exists($footerPath)) {
-                    unlink($footerPath);
+                // Delete footer image
+                if (!empty($camp->report_footer_image)) {
+                    $footerPath = public_path('super_admin_uploads/camp_footer_image/' . $camp->report_footer_image);
+                    if (file_exists($footerPath)) {
+                        unlink($footerPath);
+                    }
                 }
-            }
-            $camp->delete();
+                $camp->delete();
 
-            return response()->json([
-                'success' => 1,
-                'message' => "Camp Delete successfully",
-            ]);
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Camp Delete successfully",
+                ]);
+            }else{
+                return redirect()->back()->with('error','You have no rights for this action!');
+            }
 
         } catch (\Throwable $th) {
             return response()->json([

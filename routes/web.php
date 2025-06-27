@@ -26,7 +26,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\LoginController;
 use App\Http\Controllers\QcReportController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SatelliteController;
+use Spatie\Permission\Models\Permission;
     
 Route::get('config-clear', function () {
     Artisan::call('cache:clear');
@@ -54,8 +56,17 @@ Route::group(['prefix' => 'superadmin'], function ()
     // 'is_super_admin'
     Route::group(['middleware' => ['auth:web']], function ()
     {
+       Route::controller(RoleController::class)->group(function () {
+            Route::get('roles','index')->name('roles.index');
+            Route::get('roles/load','load')->name('roles.load');
+            Route::get('roles/create','create')->name('roles.create');
+            Route::post('roles/store','store')->name('roles.store');
+            Route::get('roles/edit/{id}','edit')->name('roles.edit');
+            Route::post('roles/update','update')->name('roles.update');
+            Route::post('roles/destroy','destroy')->name('roles.destroy');
+        });
+
         Route::get('dashboard', [DashboardController::class,'index'])->name('super_admin.dashboard');
-    
         Route::controller(OrganizationController::class)->group(function () {
             Route::get('organization','index')->name('organization');
             Route::get('organization/create','create')->name('organization.create');
@@ -133,7 +144,11 @@ Route::group(['prefix' => 'superadmin'], function ()
 
         Route::controller(PatientController::class)->group(function () {
             Route::get('patients','index')->name('patient');
+            Route::get('patient/create','create')->name('patient.create');
+            Route::post('patient/store','store')->name('patient.store');
             Route::post('patient/delete','delete')->name('patient.delete');
+
+            Route::post('patient/get-tests-by-profile', 'getTestsByProfile')->name('lab_technician.tests.profiles');
         });
 
         // AdminProfile
@@ -204,4 +219,3 @@ Route::group(['prefix' => 'superadmin'], function ()
     });
 
 });
-

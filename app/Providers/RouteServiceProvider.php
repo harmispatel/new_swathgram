@@ -20,23 +20,12 @@ class RouteServiceProvider extends ServiceProvider
 
   public function map()
   {
-   //  $this->mapApiRoutes();
-
-     $this->mapLabTechnicianRoutes();
      $this->mapWebRoutes();
      $this->mapApiRoutes();
-     $this->mapAdminRoutes();
-     $this->mapPathologistRoutes();
-     $this-> mapManagerRoutes();
+    //  $this->mapAdminRoutes();
+    //  $this->mapPathologistRoutes();
+    //  $this-> mapManagerRoutes();
 
-  }
-
-
-  protected function mapLabTechnicianRoutes()
-  {
-    Route::middleware('web')
-       ->namespace($this->namespace)
-       ->group(base_path('routes/LabTechnician.php'));
   }
 
   protected function mapWebRoutes()
@@ -66,17 +55,17 @@ class RouteServiceProvider extends ServiceProvider
           ->group(base_path('routes/admin.php'));
   }
 
-  protected function mapPathologistRoutes()
-  {
-      Route::middleware(['web'])
-          ->group(base_path('routes/Pathologist.php'));
+  // protected function mapPathologistRoutes()
+  // {
+  //     Route::middleware(['web'])
+  //         ->group(base_path('routes/Pathologist.php'));
          
-  }
-  protected function mapManagerRoutes()
-  {
-      Route::middleware(['web'])
-          ->group(base_path('routes/manager.php'));
+  // }
+  // protected function mapManagerRoutes()
+  // {
+  //     Route::middleware(['web'])
+  //         ->group(base_path('routes/manager.php'));
          
-  }
+  // }
   
 }

@@ -9,22 +9,46 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class PathologistController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('permission:pathologists|pathologist.create|pathologist.edit|pathologist.update|pathologist.delete');
+    //     $this->middleware('permission:pathologist.create')->only(['create', 'store']);
+    //     $this->middleware('permission:pathologist.edit')->only(['edit', 'update']);
+    //     $this->middleware('permission:pathologist.delete')->only(['delete']);
+    // }
+
+
     public function index()
     {
-        $pathologists = Pathologist::with('organizations','organizations.camps')
-                                    ->orderBy('id','desc')
-                                    ->get();
-   
-        return view('super_admin.pathologist.index',compact('pathologists'));
+        if(Auth::user()->can('pathologists')){  
+            $pathologists = Pathologist::with('organizations','organizations.camps')
+                                        ->orderBy('id','desc')
+                                        ->get();
+    
+            return view('super_admin.pathologist.index',compact('pathologists'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }   
+
     }
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.pathologist.create',compact('organizations'));
+         if(Auth::user()->can('pathologist.create')){
+                $user = Auth::user();
+                if($user->role == '2'){
+                    $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+                }else{
+                    $organizations = Organization::orderBy('id','desc')->get();
+                }
+                return view('super_admin.pathologist.create',compact('organizations'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function store(Request $request)
@@ -79,8 +103,12 @@ class PathologistController extends Controller
             'username'=>$request->username,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
+            'image' => $photo,
             'role'=>3,
         ]);
+        
+        $role = Role::where('id',$user->role)->first();
+        $user->assignRole($role->name);
 
         $pathologist = new Pathologist();
         $pathologist->user_id = $user->id;
@@ -107,10 +135,18 @@ class PathologistController extends Controller
 
     public function edit($id)
     {
-        $pathologist = Pathologist::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
-      
-        return view('super_admin.pathologist.edit',compact('pathologist','organizations'));
+         if(Auth::user()->can('pathologist.edit')){
+            $pathologist = Pathologist::find(decrypt($id));
+            $user = Auth::user();
+            if($user->role == '2'){
+                $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+            }else{
+                $organizations = Organization::orderBy('id','desc')->get();
+            }
+            return view('super_admin.pathologist.edit',compact('pathologist','organizations'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     public function update(Request $request)
@@ -189,61 +225,65 @@ class PathologistController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            $id = decrypt($request->id);
-            $pathologist = Pathologist::findOrFail($id);
+         if(Auth::user()->can('pathologist.delete')){
+            try {
+                $id = decrypt($request->id);
+                $pathologist = Pathologist::findOrFail($id);
 
-            if ($pathologist->photo) {
-                $photoPath = public_path(str_replace(asset('/'), '', $pathologist->photo));
-                if (file_exists($photoPath)) {
-                    unlink($photoPath);
+                if ($pathologist->photo) {
+                    $photoPath = public_path(str_replace(asset('/'), '', $pathologist->photo));
+                    if (file_exists($photoPath)) {
+                        unlink($photoPath);
+                    }
                 }
-            }
 
-            // Delete signature
-            if ($pathologist->signature) {
-                $signaturePath = public_path(str_replace(asset('/'), '', $pathologist->signature));
-                if (file_exists($signaturePath)) {
-                    unlink($signaturePath);
+                // Delete signature
+                if ($pathologist->signature) {
+                    $signaturePath = public_path(str_replace(asset('/'), '', $pathologist->signature));
+                    if (file_exists($signaturePath)) {
+                        unlink($signaturePath);
+                    }
                 }
-            }
 
-            // Delete license
-            if ($pathologist->license) {
-                $licensePath = public_path(str_replace(asset('/'), '', $pathologist->license));
-                if (file_exists($licensePath)) {
-                    unlink($licensePath);
+                // Delete license
+                if ($pathologist->license) {
+                    $licensePath = public_path(str_replace(asset('/'), '', $pathologist->license));
+                    if (file_exists($licensePath)) {
+                        unlink($licensePath);
+                    }
                 }
-            }
 
-            // Detach from pivot table (organization_pathologist)
-            $pathologist->organizations()->detach();
+                // Detach from pivot table (organization_pathologist)
+                $pathologist->organizations()->detach();
 
-            if (!$pathologist) {
+                if (!$pathologist) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'pathologist not found',
+                    ]);
+                }
+
+                $user = User::findOrFail($pathologist->user_id);
+                $pathologist->delete();
+
+                if ($user) {
+                    $user->delete();
+                }
+
+
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Pathologist Delete successfully",
+                ]);
+
+            } catch (\Throwable $th) {
                 return response()->json([
                     'success' => 0,
-                    'message' => 'pathologist not found',
+                    'message' => "Internal Server Error!",
                 ]);
             }
-
-            $user = User::findOrFail($pathologist->user_id);
-            $pathologist->delete();
-
-            if ($user) {
-                $user->delete();
-            }
-
-
-            return response()->json([
-                'success' => 1,
-                'message' => "Pathologist Delete successfully",
-            ]);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 }

@@ -4,6 +4,13 @@
 
 <section class="section show-section patients mt-3">
     <div class="container">
+
+        @can('patient.create')
+            <div class="addbutton">
+                <a href="{{ route('patient.create') }}" class="btn btn-primary">Add Patients</a>
+            </div>
+        @endcan
+        
         <form id="sort_blogs" action="{{ route('patient') }}" method="GET">
             <div class="row mb-5">
                 <div class="col-md-4 mt-5">
@@ -82,9 +89,11 @@
                             <td>{{ $patient->camp->camp_name ?? '' }}</td>
                             <td>{{ $patient->created_at }}</td>
                             <td>
-                                <a onclick="deletePatient('{{ encrypt($patient->id) }}')" class="ps-2">
-                                    <i class="bi bi-trash3"></i>
-                                </a>
+                                @can('patient.delete')
+                                    <a onclick="deletePatient('{{ encrypt($patient->id) }}')" class="ps-2">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

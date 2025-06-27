@@ -26,45 +26,17 @@ class AuthController extends Controller
         ]);
 
         $input = $request->except('_token');
-
-        // lab_technician guard
-        // if (Auth::->attempt($input)) {
-        //     $labTech = Auth::guard('lab_technician')->user();
-        //     $username = $labTech->username;
-        //     return redirect()->route('lab_technician.dashboard')->with('success', 'Welcome ' . $username);
-        // }
-        
         if (Auth::attempt($input)){
             $role = Auth::user()->role;
-            // dd($role);//elseif(Auth::user()->role == 5)
-            if ($role == 1){
-                $username = Auth::user()->firstname." ".Auth::user()->lastname;
-                return redirect()->route('super_admin.dashboard')->with('success', 'Welcome '.$username);
-            }elseif($role == 5){
-                    
-                $username = Auth::user()->firstname." ".Auth::user()->lastname;
-                return redirect()->route('lab_technician.dashboard')->with('success', 'Welcome ' . $username);
-
-            }elseif($role == 2){
-                 $username = Auth::user()->firstname." ".Auth::user()->lastname;
-                 return redirect()->route('admin.dashboard')->with('success', 'Welcome ' . $username);
-            }
-            elseif($role == 3){
-                 $username = Auth::user()->firstname." ".Auth::user()->lastname;
-                 return redirect()->route('pathologist.dashboard')->with('success', 'Welcome ' . $username);
-            } elseif($role == 6){
-                 $username = Auth::user()->firstname." ".Auth::user()->lastname;
-                 return redirect()->route('manager.dashboard')->with('success', 'Welcome ' . $username);
-            }
-                
-            
+            $username = Auth::user()->firstname." ".Auth::user()->lastname;
+            return redirect()->route('super_admin.dashboard')->with('success', 'Welcome '.$username);
         }
         return back()->with('error', 'Please Enter Valid Email & Password');
     }
 
     public function logout()
     {
-        session()->forget('locale');
+        // session()->forget('locale');
         session()->save();
         Auth::logout();
         return redirect()->route('login');

@@ -11,6 +11,7 @@ use App\Models\Test;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 use ZipArchive;
 
 
@@ -18,69 +19,72 @@ class PatientReportController extends Controller
 {
     public function index(Request $request)
     {
-        try {
+       if(Auth::user()->can('patient.report')){
+            try {
 
-            $query = Patient::with('camp', 'reports.testResults.test')->orderBy('id','desc');
-            if ($request->filled('organization_type')) {
-                $query->where('organization_id', $request->organization_type);
-            }
+                $query = Patient::with('camp', 'reports.testResults.test')->orderBy('id','desc');
+                if ($request->filled('organization_type')) {
+                    $query->where('organization_id', $request->organization_type);
+                }
 
-            if ($request->filled('camp_id')) {
-                $query->where('camp_id', $request->camp_id);
-            }
+                if ($request->filled('camp_id')) {
+                    $query->where('camp_id', $request->camp_id);
+                }
 
-            if ($request->filled('gender')) {
-                $query->where('gender', $request->gender);
-            }
+                if ($request->filled('gender')) {
+                    $query->where('gender', $request->gender);
+                }
 
-            if ($request->filled('device_code')) {
-                $query->where('device_code', $request->gender);
-            }
+                if ($request->filled('device_code')) {
+                    $query->where('device_code', $request->gender);
+                }
 
-       
-            if ($request->filled('test_id')) {
-                $query->whereHas('reports.testResults', function ($q) use ($request) {
-                    $q->where('test_id', $request->test_id);
-                });
-            }
-
-            if ($request->filled('start_date') && $request->filled('end_date')) {
-                $query->whereHas('reports', function ($q) use ($request) {
-                    $q->whereBetween('created_at', [
-                        $request->start_date . ' 00:00:00',
-                        $request->end_date . ' 23:59:59',
-                    ]);
-                });
-            }
-
-            if ($request->filled('device_id')) {
-                $campIds = Device::where('id', $request->device_id)->pluck('camp_id');
-                $query->whereIn('camp_id', $campIds);
-            }
-
-            $patients = $query->get();
-            $organizations = Organization::orderBy('id','desc')->get();
-            $camps = Camp::orderBy('id','desc')->get();
-            $devices = Device::where('status','active')->orderBy('id','desc')->get();
-            $tests = Test::where('is_active',1)->orderBy('id','desc')->get();
-
-            if($request->file_type == "excel"){
-              return $this->exportData($patients,$request->file_type);
-            }
-
-            if($request->file_type == "zip"){
-             
-                return $this->DownloadZipData($patients,$request->file_type);
-            }
         
-            return view('super_admin.patient_report.index',compact('patients','organizations','camps','devices','tests'));
+                if ($request->filled('test_id')) {
+                    $query->whereHas('reports.testResults', function ($q) use ($request) {
+                        $q->where('test_id', $request->test_id);
+                    });
+                }
 
-        } 
-        catch (\Throwable $th) 
-        {
-            dd($th);
-            return redirect()->back()->with('error', 'Something went wrong!');
-        }
+                if ($request->filled('start_date') && $request->filled('end_date')) {
+                    $query->whereHas('reports', function ($q) use ($request) {
+                        $q->whereBetween('created_at', [
+                            $request->start_date . ' 00:00:00',
+                            $request->end_date . ' 23:59:59',
+                        ]);
+                    });
+                }
+
+                if ($request->filled('device_id')) {
+                    $campIds = Device::where('id', $request->device_id)->pluck('camp_id');
+                    $query->whereIn('camp_id', $campIds);
+                }
+
+                $patients = $query->get();
+                $organizations = Organization::orderBy('id','desc')->get();
+                $camps = Camp::orderBy('id','desc')->get();
+                $devices = Device::where('status','active')->orderBy('id','desc')->get();
+                $tests = Test::where('is_active',1)->orderBy('id','desc')->get();
+
+                if($request->file_type == "excel"){
+                return $this->exportData($patients,$request->file_type);
+                }
+
+                if($request->file_type == "zip"){
+                
+                    return $this->DownloadZipData($patients,$request->file_type);
+                }
+            
+                return view('super_admin.patient_report.index',compact('patients','organizations','camps','devices','tests'));
+
+            } 
+            catch (\Throwable $th) 
+            {
+                return redirect()->back()->with('error', 'Something went wrong!');
+            }
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
     //excel
@@ -192,32 +196,36 @@ class PatientReportController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            $patient = Patient::findOrFail(decrypt($request->id));
+        if(Auth::user()->can('patient.delete')){
+            try {
+                $patient = Patient::findOrFail(decrypt($request->id));
 
-            if (!$patient) {
+                if (!$patient) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'Manager not found',
+                    ]);
+                }
+
+                $user = User::find($patient->user_id);
+                $patient->delete();
+                if ($user) {
+                    $user->delete();
+                }
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Patient Delete successfully",
+                ]);
+
+            } catch (\Throwable $th) {
                 return response()->json([
                     'success' => 0,
-                    'message' => 'Manager not found',
+                    'message' => "Internal Server Error!",
                 ]);
             }
-
-            $user = User::find($patient->user_id);
-            $patient->delete();
-            if ($user) {
-                $user->delete();
-            }
-            return response()->json([
-                'success' => 1,
-                'message' => "Patient Delete successfully",
-            ]);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+         } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }     
     }
 
 }

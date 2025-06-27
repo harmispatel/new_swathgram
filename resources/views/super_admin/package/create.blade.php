@@ -25,7 +25,7 @@
                         <label class="form-label">Package Name <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="package_name" class="form-control {{ $errors->has('package_name') ? 'is-invalid' : '' }}" placeholder="Package Name">
+                        <input type="text" name="package_name" class="form-control {{ $errors->has('package_name') ? 'is-invalid' : '' }}" placeholder="Package Name" value="{{old('package_name')}}">
                         @if($errors->has('package_name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('package_name') }}

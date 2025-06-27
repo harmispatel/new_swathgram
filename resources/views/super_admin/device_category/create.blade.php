@@ -30,7 +30,7 @@
                         <label class="form-label">Product Name <span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="device_name" placeholder="Enter Name">
+                        <input type="text" name="device_name" placeholder="Enter Name" value="{{old('device_name')}}">
                         @if($errors->has('device_name'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('device_name') }}
@@ -45,7 +45,7 @@
                         <label class="form-label">Product Details<span class="text-danger">*</span></label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" name="description" class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" placeholder="Product Details">
+                        <input type="text" name="description" class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" placeholder="Product Details" value="{{old('description')}}">
                         @if($errors->has('description'))
                             <div class="invalid-feedback">
                                 {{ $errors->first('description') }}

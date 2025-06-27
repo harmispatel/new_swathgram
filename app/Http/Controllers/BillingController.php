@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class BillingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:billing');
+    }
+    
     public function index(Request $request)
     {
         try {

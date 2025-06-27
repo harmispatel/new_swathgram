@@ -9,18 +9,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class OrganizationController extends Controller
 {
     public function index()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.organization.index',compact('organizations'));
+        if(Auth::user()->can('organization')){
+            $organizations = Organization::orderBy('id','desc')->get();
+            return view('super_admin.organization.index',compact('organizations'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function create()
     {
-        return view('super_admin.organization.create');
+        if(Auth::user()->can('organization.create')){
+            return view('super_admin.organization.create');
+        }
+        else{
+            return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function store(Request $request)
@@ -56,9 +66,12 @@ class OrganizationController extends Controller
                 'username'=>$request->username,
                 'email'=>$request->email,
                 'password'=>Hash::make($request->password),
+                'image' => $org_logo,
                 'role'=>2,
             ]);
 
+            $role = Role::where('id',$user->role)->first();
+            $user->assignRole($role->name);
 
             $organization = new Organization();
             $organization->user_id = $user->id;
@@ -88,15 +101,18 @@ class OrganizationController extends Controller
 
     public function edit($id)
     {
-        $organization = Organization::find(decrypt($id));
-        // $selectedApps = json_decode($organization->app_selection, true) ?? [];
-        $selectedApps = $organization->app_selection ?? [];
-        return view('super_admin.organization.edit',compact('organization','selectedApps'));
+         if(Auth::user()->can('organization.edit')){
+            $organization = Organization::find(decrypt($id));
+            // $selectedApps = json_decode($organization->app_selection, true) ?? [];
+            $selectedApps = $organization->app_selection ?? [];
+            return view('super_admin.organization.edit',compact('organization','selectedApps'));
+         }else{
+            return redirect()->back()->with('error','You have no rights for this action!');
+         }
     }
 
     public function update(Request $request)
     {
-    
         $validated = $request->validate([
                 'organization_name' => 'required',
                 'owner_name' => 'required',
@@ -163,45 +179,49 @@ class OrganizationController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-         
-            $organization = Organization::find(decrypt($request->id));
-            $lab_technician = LabTechnician::where('organization_id',$organization->id)->first();
-
-            // pathologists,lab_technician
-            if ($organization->managers()->count() > 0) {
-                return response()->json([
-                    'success' => 0,
-                    'message' => "Cannot delete: Organization is assigned to Manager.",
-                ]);
-            }
-
-            if ($organization->pathologists()->count() > 0) {
-                return response()->json([
-                    'success' => 0,
-                    'message' => "Cannot delete: Organization is assigned to Pathologists.",
-                ]);
-            }
+         if(Auth::user()->can('organization.delete')){
+            try {
             
-            if (!empty($lab_technician)) {
+                $organization = Organization::find(decrypt($request->id));
+                $lab_technician = LabTechnician::where('organization_id',$organization->id)->first();
+
+                // pathologists,lab_technician
+                if ($organization->managers()->count() > 0) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => "Cannot delete: Organization is assigned to Manager.",
+                    ]);
+                }
+
+                if ($organization->pathologists()->count() > 0) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => "Cannot delete: Organization is assigned to Pathologists.",
+                    ]);
+                }
+                
+                if (!empty($lab_technician)) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => "Cannot delete: Organization is assigned to lab Technician.",
+                    ]);
+                }
+                
+                $organization->delete();
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Organization Delete successfully",
+                ]);
+
+            } catch (\Throwable $th) {
+                dd($th);
                 return response()->json([
                     'success' => 0,
-                    'message' => "Cannot delete: Organization is assigned to lab Technician.",
+                    'message' => "Internal Server Error!",
                 ]);
             }
-            
-            $organization->delete();
-            return response()->json([
-                'success' => 1,
-                'message' => "Organization Delete successfully",
-            ]);
-
-        } catch (\Throwable $th) {
-            dd($th);
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+        }else{
+            return redirect()->back()->with('error','You have no rights for this action!');
+         }
     }
 }

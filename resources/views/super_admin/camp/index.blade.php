@@ -3,9 +3,13 @@
 @section('content')
 
 <section class="section show-section camp mt-3">
-    <div class="addbutton">
-        <a href="{{ route('camp.create') }}" class="btn btn-primary">Add Camp</a>
-    </div>  
+
+    @can('camp.create')
+        <div class="addbutton">
+            <a href="{{ route('camp.create') }}" class="btn btn-primary">Add Camp</a>
+        </div>
+    @endcan
+    
     <div class="row">
         <table id="camp_table" class="table table-striped pt-2">
             <thead>

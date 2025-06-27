@@ -9,25 +9,47 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
-
+use Spatie\Permission\Models\Role;
 
 class ManagerController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     $this->middleware('permission:managers|manager.create|manager.edit|manager.update|manager.delete');
+    //     $this->middleware('permission:manager.create')->only(['create', 'store']);
+    //     $this->middleware('permission:manager.edit')->only(['edit', 'update']);
+    //     $this->middleware('permission:manager.delete')->only(['delete']);
+    // }
+
+
     public function index()
     {
-        $managers = Manager::with('organization')->orderBy('id','desc')->get();
-        return view('super_admin.manager.index',compact('managers'));
+         if(Auth::user()->can('managers')){
+            $managers = Manager::with('organization')->orderBy('id','desc')->get();
+            return view('super_admin.manager.index',compact('managers'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }    
     }
 
     public function create()
     {
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.manager.create',compact('organizations'));
+        if(Auth::user()->can('manager.create')){
+            $user = Auth::user();
+            if($user->role == '2'){
+                $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+            }else{
+                $organizations = Organization::orderBy('id','desc')->get();
+            }
+            return view('super_admin.manager.create',compact('organizations'));
+        } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }    
     }
 
     public function store(Request $request)
-    {
-        
+    {  
         $validated = $request->validate([
             'name' => 'required|unique:managers,name',
             'email' => 'required|email|unique:managers,email',
@@ -68,6 +90,9 @@ class ManagerController extends Controller
             'role'=>6,
         ]);
 
+        $role = Role::where('id',$user->role)->first();
+        $user->assignRole($role->name);
+
         $manager = new Manager();
         $manager->user_id = $user->id;
         $manager->organization_id = $request->organization_type;
@@ -90,9 +115,20 @@ class ManagerController extends Controller
 
     public function edit($id)
     {
-        $manager = Manager::find(decrypt($id));
-        $organizations = Organization::orderBy('id','desc')->get();
-        return view('super_admin.manager.edit',compact('manager','organizations'));
+        if(Auth::user()->can('manager.edit')){
+            $manager = Manager::find(decrypt($id));
+            $user = Auth::user();
+            if($user->role == '2'){
+                $organizations = Organization::where('user_id',$user->id)->orderBy('id','desc')->get();
+            }else{
+                $organizations = Organization::orderBy('id','desc')->get();
+            }
+        
+             return view('super_admin.manager.edit',compact('manager','organizations'));
+
+         } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }
     }
 
     public function update(Request $request)
@@ -173,37 +209,41 @@ class ManagerController extends Controller
 
     public function delete(Request $request)
     {
-        try {
-            $managerId = decrypt($request->id);
+        if(Auth::user()->can('manager.delete')){
+            try {
+                $managerId = decrypt($request->id);
 
-            $manager = Manager::findOrFail($managerId);
+                $manager = Manager::findOrFail($managerId);
 
-            if (!$manager) {
+                if (!$manager) {
+                    return response()->json([
+                        'success' => 0,
+                        'message' => 'Manager not found',
+                    ]);
+                }
+
+                $user = User::findOrFail($manager->user_id);
+                $manager->delete();
+
+                if ($user) {
+                    $user->delete();
+                }
+
+                return response()->json([
+                    'success' => 1,
+                    'message' => "Manager Delete successfully",
+                ]);
+
+            }  catch (\Throwable $th) {
+                dd($th);
                 return response()->json([
                     'success' => 0,
-                    'message' => 'Manager not found',
+                    'message' => "Internal Server Error!",
                 ]);
             }
-
-            $user = User::findOrFail($manager->user_id);
-            $manager->delete();
-
-            if ($user) {
-                $user->delete();
-            }
-
-            return response()->json([
-                'success' => 1,
-                'message' => "Manager Delete successfully",
-            ]);
-
-        }  catch (\Throwable $th) {
-            dd($th);
-            return response()->json([
-                'success' => 0,
-                'message' => "Internal Server Error!",
-            ]);
-        }
+         } else {
+          return redirect()->back()->with('error','You have no rights for this action!');
+        }    
         
     }
 
