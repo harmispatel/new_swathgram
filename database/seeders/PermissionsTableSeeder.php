@@ -106,6 +106,14 @@ class PermissionsTableSeeder extends Seeder
             'test.sub-profile.create',
             'test.sub-profile.store',
             'test.sub-profile.delete',
+
+            //roles
+            'roles.index',
+            'roles.create',
+            'roles.edit',
+            'roles.destroy',
+
+            'abha.register_patient'
         ];
 
         foreach ($permissions as $permission) {

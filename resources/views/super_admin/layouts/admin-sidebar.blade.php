@@ -187,5 +187,23 @@
             </a>
         </li> 
         @endcan
+
+        @can('roles.index')
+        <li class="nav-item">
+            <a class="nav-link {{ ($routeName == 'roles.index') ? 'active-tab' : '' }}" href="{{ route('roles.index') }}">
+                <i class="bi bi-cash-coin {{ ($routeName == 'roles.index') ? 'icon-tab' : '' }}"></i>
+                <span>Roles & Permission</span>
+            </a>
+        </li>
+        @endcan
+
+        @can('abha.register_patient')
+        <li class="nav-item">
+            <a class="nav-link {{ ($routeName == 'abha.register_patient') ? 'active-tab' : '' }}" href="{{ route('abha.register_patient') }}">
+                <i class="bi bi-cash-coin {{ ($routeName == 'abha.register_patient') ? 'icon-tab' : '' }}"></i>
+                <span>Create ABHA</span>
+            </a>
+        </li>
+        @endcan
     </ul>
 </aside>

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\{Camp, LabTechnician, Organization,Package,PackageTest,Patient,Report,Test,TestProfile,TestResult,User};
-use Illuminate\Support\Facades\{Auth,Hash};
+use App\Models\{Camp, LabTechnician, Organization,Package,PackageTest,Patient,Report,Test,TestProfile,TestResult,User, UserOtp};
+use Carbon\Carbon;
+use Illuminate\Support\Facades\{Auth,Hash, Validator};
+use Twilio\Rest\Client;
 
 class PatientController extends Controller
 {
@@ -85,8 +87,26 @@ class PatientController extends Controller
         ]);
     }
 
+    private function createTestResults($tests, $report, $age, $gender) {
+        foreach ($tests as $test) {
+            $test_result = new TestResult();
+            $test_result->report_id = $report->id;
+            $test_result->test_id = $test->id;
+            $test_result->value = $test->price;
+            $test_result->unit = $test->unit ?? '';
+
+            if ($age >= 10) {
+                $test_result->reference_range = $gender == "male" ? 'male_ref_range' : 'female_ref_range';
+            } else {
+                $test_result->reference_range = 'child_ref_range';
+            }
+            $test_result->save();
+        }
+    }
+
     public function store(Request $request)
     {
+        
         $validated = $request->validate([
             'camp_name' => 'required',
             'email' => 'required|email|unique:patients,email',
@@ -105,6 +125,10 @@ class PatientController extends Controller
             'refrance_by' => 'nullable|string'
         ]);
 
+        if (!session('otp_verified')) {
+            return redirect()->back()->withErrors(['otp' => 'OTP not verified.']);
+        }
+
 
         $user = User::create([
             'username'=>$request->username,
@@ -113,7 +137,7 @@ class PatientController extends Controller
             'role'=>4,
         ]);
 
-        $user = Auth::user();
+         $user = Auth::user();
         $lab_tech = LabTechnician::where('user_id',$user->id)->first();
 
         $patient = new Patient();
@@ -154,26 +178,82 @@ class PatientController extends Controller
             $tests = Test::whereIn('id',$request->test_list)->get();
             $this->createTestResults($tests, $report, $request->age, $request->gender);
         }
-    
-        return redirect()->route('super_admin.patient')->with('success', 'Patient created successfully.'); 
+
+        session()->forget('otp_verified'); 
+        return redirect()->route('patient')->with('success', 'Patient created successfully.'); 
     }
 
-    private function createTestResults($tests, $report, $age, $gender) {
-        foreach ($tests as $test) {
-            $test_result = new TestResult();
-            $test_result->report_id = $report->id;
-            $test_result->test_id = $test->id;
-            $test_result->value = $test->price;
-            $test_result->unit = $test->unit ?? '';
+    public function sendOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'camp_name' => 'required',
+            'email' => 'required|email|unique:patients,email',
+            'username' => 'required|unique:patients,username',
+            'identity_proof_type' => 'required',
+            'identity_proof_number' => 'required',
+            'age' => 'required',
+            'gender' => 'required',
+            'mobile_number' => 'required',
+            'package' => 'required',    
+            'address' => 'required',
+            'medical_history' => 'required',
+            'profile' => 'required',
+            // 'test_list' => 'required',
+            // 'test_list.*' => 'exists:tests,id',
+            'refrance_by' => 'nullable|string'
+        ]);
 
-            if ($age >= 10) {
-                $test_result->reference_range = $gender == "male" ? 'male_ref_range' : 'female_ref_range';
-            } else {
-                $test_result->reference_range = 'child_ref_range';
-            }
-            $test_result->save();
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
+
+
+        $otpCode = rand(100000, 999999);
+        $mobile = $request->mobile_number;
+
+        // $account_sid = getenv("TWILIO_SID");
+        // $auth_token = getenv("TWILIO_TOKEN");
+        // $twilio_number = getenv("TWILIO_FROM");
+
+        // $message = "Patient OTP is ".$otpCode;
+
+        // $client = new Client($account_sid, $auth_token);
+        // $client->messages->create($mobile, [
+        //     'from' => $twilio_number, 
+        //     'body' => $message]);
+
+        UserOtp::updateOrCreate(
+            ['mobile_number' => $mobile],
+            ['otp' => $otpCode, 'expire_at' => Carbon::now()->addMinutes(5)]
+        );
+        return response()->json(['success' => true, 'message' => 'OTP sent.']);
     }
 
+    public function verifyOtp(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'mobile_number' => 'required|digits:10',
+            'otp' => 'required|digits:6',
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Invalid input.']);
+        }
+
+        session()->put('otp_verified', true);
+
+        $otpData = UserOtp::where('mobile_number', $request->mobile_number)
+                      ->where('otp', $request->otp)
+                      ->where('expire_at', '>', Carbon::now())
+                      ->first();
+
+        if (!$otpData) {
+            return response()->json(['success' => false, 'message' => 'OTP invalid or expired.']);
+        }
+        $otpData->delete();
+        return response()->json(['success' => true, 'message' => 'OTP verified.']);
+    }
 }

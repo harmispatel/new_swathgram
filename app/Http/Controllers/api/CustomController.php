@@ -42,7 +42,6 @@ use GuzzleHttp\Psr7\Request as Psr7Request;
 class CustomController extends BaseController
 {
     use ImageTrait;
-
     public function CommanData()
     {
         $camps = Camp::select('id','camp_name')->get();
@@ -54,8 +53,6 @@ class CustomController extends BaseController
             // 'package' => $packages,
             // 'profiles' => $profiles
         ];
-
-        
         return $this->sendResponse($camps, 'Camp Data Get Successful', true);
     }
 

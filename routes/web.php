@@ -1,33 +1,9 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BillingController;
-use App\Http\Controllers\CampController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\DeviceCategoryController;
-use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\ExportController;
-use App\Http\Controllers\PatientReportController;
-use App\Http\Controllers\LabTechnicianController;
-use App\Http\Controllers\ManagerController;
-use App\Http\Controllers\OrganizationController;
-use App\Http\Controllers\PackageController;
-use App\Http\Controllers\PathologistController;
-use App\Http\Controllers\PatientController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RevenueController;
-use App\Http\Controllers\SubProfileController;
-use App\Http\Controllers\TestsController;
-use App\Http\Controllers\UserController;
-use App\Http\Middleware\IsSuperAdmin;
+use App\Http\Controllers\{AbhaController,AuthController,BillingController,CampController,DashboardController,DepartmentController,DeviceCategoryController,DeviceController,ExportController,PatientReportController,LabTechnicianController,ManagerController,OrganizationController,PackageController,PathologistController,PatientController,ProductController,ProfileController,RevenueController,SubProfileController,TestsController,UserController,RoleController,QcReportController,SatelliteController};
+
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\LoginController;
-use App\Http\Controllers\QcReportController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SatelliteController;
 use Spatie\Permission\Models\Permission;
     
 Route::get('config-clear', function () {
@@ -149,6 +125,9 @@ Route::group(['prefix' => 'superadmin'], function ()
             Route::post('patient/delete','delete')->name('patient.delete');
 
             Route::post('patient/get-tests-by-profile', 'getTestsByProfile')->name('lab_technician.tests.profiles');
+
+            Route::post('/send-otp', [PatientController::class, 'sendOtp'])->name('otp.send');
+            Route::post('/verify-otp', [PatientController::class, 'verifyOtp'])->name('otp.verify');
         });
 
         // AdminProfile
@@ -216,6 +195,13 @@ Route::group(['prefix' => 'superadmin'], function ()
         });
 
          Route::get('/revenue-export', [RevenueController::class, 'export'])->name('revenue.export');
+         
+         
+        
     });
+});
 
+Route::controller(AbhaController::class)->group(function () {
+    Route::get('abha/create','create')->name('abha.create');
+    Route::get('abha/register_patient','registerPatient')->name('abha.register_patient');
 });

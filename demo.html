@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+    <style>
+        :root {
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+                "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.5;
+            font-weight: 400;
+
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+
+            --primary: hsl(270, 100%, 50%);
+            --white: #fff;
+            --black: #000;
+            --darker: color-mix(in oklab, var(--primary), var(--black, #000) 15%);
+            --lighter: color-mix(in oklab, var(--primary), var(--white, #fff) 20%);
+        }
+
+        :is(*, *::before, *::after) {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .main-wrapper {
+            height: 100dvh;
+            display: grid;
+            place-items: center;
+        }
+
+        .steps-wrapper {
+            max-width: 400px;
+            width: 100%;
+
+            .steps {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                position: relative;
+
+                .step {
+                    width: 50px;
+                    height: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 4px solid rgb(222, 222, 222);
+                    border-radius: 50%;
+
+                    color: rgb(135, 135, 135);
+                    background: rgb(255, 255, 255);
+                    font-size: 24px;
+                    font-weight: 600;
+
+                    transition: 200ms ease;
+                    transition-delay: 0ms;
+
+                    &.active {
+                        color: var(--primary);
+                        border-color: var(--primary);
+                        transition-delay: 100ms;
+                    }
+                }
+
+                .progress-bar {
+                    position: absolute;
+                    width: 100%;
+                    height: 4px;
+                    background: rgb(222, 222, 222);
+                    z-index: -1;
+
+                    .progress {
+                        position: absolute;
+                        // width: 20%;
+                        height: 100%;
+                        background: var(--primary);
+                        transition: 300ms ease;
+                    }
+                }
+            }
+
+            .buttons {
+                margin-block-start: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+
+                .btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 10px 15px;
+                    font-family: inherit;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    border-radius: 6px;
+                    border: none;
+                    background: var(--primary);
+                    color: var(--white);
+                    cursor: pointer;
+                    transition: 200ms linear;
+
+                    &:active {
+                        scale: 0.9;
+                    }
+
+                    &:hover:not(&:disabled) {
+                        background: var(--darker);
+                    }
+
+                    &:disabled {
+                        cursor: not-allowed;
+                        background: var(--lighter);
+                        pointer-events: none;
+                    }
+                }
+            }
+        }
+
+    </style>
+</head>
+<body>
+	<main class="main-wrapper">
+        <div class="steps-wrapper">
+            <div class="steps">
+                <span class="step active">1</span>
+                <span class="step">2</span>
+                <span class="step">3</span>
+                <span class="step">4</span>
+                <div class="progress-bar">
+                    <span class="progress"></span>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="btn btn-prev" id="btn-prev" disabled>Previous</button>
+                <button class="btn btn-next" id="btn-next">Next</button>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // DOM elements
+    const steps = document.querySelectorAll(".step"),
+        progress = document.querySelector(".progress-bar .progress"),
+        buttons = document.querySelectorAll(".buttons .btn");
+
+    let currentStep = 1;
+
+    // Update the current step and DOM
+    const updateSteps = (e) => {
+        // Update the current step based on the btn clicked
+
+        currentStep = e.target.id === "btn-next" ? ++currentStep : --currentStep;
+        // loop through steps and toggle 'active' class based on index and current-step
+        steps.forEach((step, index) => {
+            step.classList[`${index < currentStep ? "add" : "remove"}`]("active");
+        });
+
+        // Update progress width based on current step
+        progress.style.width = `${((currentStep - 1) / (steps.length - 1)) * 100}%`;
+
+        // Check last/first step and add 'disabled' attribute
+        if (currentStep === steps.length) {
+            buttons[1].disabled = true;
+        } else if (currentStep === 1) {
+            buttons[0].disabled = true;
+        } else {
+            buttons.forEach((btn) => (btn.disabled = false));
+        }
+    };
+
+    // Add click listeners to all buttons
+    buttons.forEach((button) => {
+        button.addEventListener("click", updateSteps);
+    });
+
+</script>
+</body>
+</html>

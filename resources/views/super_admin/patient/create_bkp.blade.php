@@ -279,10 +279,15 @@
 
         <div class="text-center mb-3 mt-5">
             <a href="{{ route('patient') }}" type="button" class="btn btn-danger me-2">Cancel</a>
-            {{-- <button type="submit" class="btn btn-success">Save</button> --}}
-            <button type="submit" class="btn btn-success" id="submitBtn">Save</button>
+            <button type="submit" class="btn btn-success">Save</button>
         </div>
     </form>
+
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendOtpModal">
+        Launch demo modal
+    </button>
 
     <!-- Modal -->
     <div class="modal fade" id="sendOtpModal" tabindex="-1" aria-labelledby="sendOtpModalLabel" aria-hidden="true">
@@ -342,9 +347,7 @@
 </section>
 @endsection
 
-
 @section('custom-js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function () {
        $('#test_list').select2();
@@ -391,111 +394,36 @@
 
 <script>
     let timer;
-    let countdown = 60;
-    let isOtpVerified = false;
+    let countdown = 60; // Set the countdown duration in seconds
 
     function startResendTimer() {
+        // Disable the button during the countdown
         document.getElementById('resendBtn').disabled = true;
+
+        // Start the countdown
         timer = setInterval(updateTimer, 1000);
     }
 
     function updateTimer() {
         const timerElement = document.getElementById('timer');
-
+        
         if (countdown > 0) {
             timerElement.textContent = `Resend in ${countdown} seconds`;
             countdown--;
         } else {
             document.getElementById('resendBtn').disabled = false;
             timerElement.textContent = '';
+            
             countdown = 60;
             clearInterval(timer);
         }
     }
 
-    $('form').on('submit', function (e) {
-        if (!isOtpVerified) {
-            e.preventDefault();
-
-            let form = this;
-            let formData = new FormData(form);
-
-            $.ajax({
-                url: '{{ route("otp.send") }}',
-                type: 'POST',
-                data: formData,
-                contentType: false,
-                processData: false,
-                success: function (res) {
-                    if (res.success) {
-                        toastr.success(res.message);
-                        $('#sendOtpModal').modal('show');
-                        startResendTimer();
-                    }
-                },
-                error: function (xhr) {
-                    if (xhr.status === 422) {
-                        const errors = xhr.responseJSON.errors;
-                        // Remove old errors
-                        $('.invalid-feedback').remove();
-                        $('.is-invalid').removeClass('is-invalid');
-
-                        // Show new ones
-                        $.each(errors, function (field, messages) {
-                            const input = $('[name="' + field + '"]');
-                            input.addClass('is-invalid');
-                            const errorHtml = `<div class="invalid-feedback">${messages[0]}</div>`;
-                            input.closest('.col-md-9, .col-md-4, .col-md-5').append(errorHtml);
-                        });
-                    } else {
-                        toastr.error('An unexpected error occurred.');
-                    }
-
-                  //  $('#submitBtn').prop('disabled', false);
-                },
-                beforeSend: function () {
-                  //  $('#submitBtn').prop('disabled', true);
-                }
-            });
-        }
-    });
-
-
-    // OTP verification
-    $('#otpInput').on('change', function () {
-        const otp = $(this).val();
-        const mobile = $('input[name="mobile_number"]').val();
-
-        if (!otp || otp.length !== 6) {
-            Swal.fire('Warning', 'Please enter a valid 6-digit OTP.', 'warning');
-            return;
-        }
-
-        $.post('{{ route("otp.verify") }}', {
-            mobile_number: mobile,
-            otp: otp,
-            _token: '{{ csrf_token() }}'
-        }, function (res) {
-            if (res.success) {
-                
-                Swal.fire('Success', 'OTP Verified!', 'success');
-                isOtpVerified = true;
-                $('#sendOtpModal').modal('hide');
-
-               // $('#submitBtn').prop('disabled', false);
-                $('form').off('submit').submit();
-            } else {
-                Swal.fire('Warning', res.message, 'warning');
-            }
-        });
-    });
-
-    // Resend OTP button logic
+    // check otp resend button
     $('#resendBtn').on('click', function () {
-        const mobile = $('input[name="mobile_number"]').val();
-      
-        if (!mobile || mobile.length !== 10) {
-            Swal.fire('Warning', 'Please enter a valid mobile number first.', 'warning');
+        let mobile = $('input[name="mobile_number"]').val();
+        if (!mobile) {
+            alert('Please enter mobile number first.');
             return;
         }
 
@@ -504,14 +432,30 @@
             _token: '{{ csrf_token() }}'
         }, function (res) {
             if (res.success) {
-                Swal.fire('Success', 'OTP resent!', 'success');
+                alert('OTP sent!');
                 startResendTimer();
             } else {
-                Swal.fire('Warning', res.message, 'warning');
+                alert(res.message);
+            }
+        });
+    });
+
+    $('#otpInput').on('change', function () {
+        const otp = $(this).val();
+        const mobile = $('input[name="mobile_number"]').val();
+
+        $.post('{{ route("otp.verify") }}', {
+            mobile_number: mobile,
+            otp: otp,
+            _token: '{{ csrf_token() }}'
+        }, function (res) {
+            if (res.success) {
+                alert('OTP Verified!');
+            } else {
+                alert(res.message);
             }
         });
     });
 </script>
-
 
 @endsection

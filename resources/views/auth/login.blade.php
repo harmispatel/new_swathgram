@@ -32,7 +32,7 @@
                     <div class="login_detail_main">
                         <div class="login_detail_left">
                             <div class="card mb-3">
-                                 @if(session()->has('error'))
+                                @if(session()->has('error'))
                                     <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
                                         {{ session('error') }}
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"
@@ -93,7 +93,15 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="login_detail_right">
+                            <div>
+                                <div class="login_abha_btn">
+                                    <a class="btn" href="{{ route('abha.create') }}">Create Abha ID</a>
+                                    <a class="btn" href="#">Download App</a>
+                                </div>
+                            </div>
+
                             <div class="login-title">
                                 <h2><span>Welcome to</span> eaccuster portal</h2>
                                 <p> Login to access your account </p>

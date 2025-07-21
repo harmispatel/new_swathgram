@@ -16,7 +16,7 @@
 
                     <ol class="breadcrumb">
 
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('super_admin.dashboard') }}">Dashboard</a></li>
 
                         <li class="breadcrumb-item"><a href="{{ route('roles.index') }}">Roles</a></li>
 
@@ -819,8 +819,6 @@
                                                     </div>
                                                 </td>
                                             </tr>
-
-
                                             
                                             {{-- DEPARTMENT --}}
                                             <tr>
@@ -933,6 +931,77 @@
                                                                 <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['test.sub-profile.delete'])) ? $permissions['test.sub-profile.delete'] : '' }}" name="permissions[]"
                                                                 {{ (isset($permissions['test.sub-profile.delete']) && in_array($permissions['test.sub-profile.delete'], $role_permissions)) ? 'checked' : '' }}>
                                                                 <span class="form-check-label">Delete </span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+
+                                            {{-- ROLES --}}
+                                            <tr>
+                                                <td class="text-muted"><span style="cursor: pointer" onclick="checkAllAfter(this)">CATEGORY</span></td>
+
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['roles.index'])) ? $permissions['roles.index'] : '' }}" name="permissions[]"
+                                                                {{ (isset($permissions['roles.index']) && in_array($permissions['roles.index'], $role_permissions)) ? 'checked' : '' }}>
+
+                                                                <span class="form-check-label">List </span>
+                                                            </label>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+                                                            <label class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['roles.create'])) ? $permissions['roles.create'] : '' }}" name="permissions[]"
+                                                                {{ (isset($permissions['roles.create']) && in_array($permissions['roles.create'], $role_permissions)) ? 'checked' : '' }}>
+
+                                                                <span class="form-check-label">Create </span>
+                                                            </label>
+                                                        </div>
+
+                                                        <div class="col-md-2">
+
+                                                            <label class="form-check">
+
+                                                                <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['roles.edit'])) ? $permissions['roles.edit'] : '' }}" name="permissions[]"
+                                                                {{ (isset($permissions['roles.edit']) && in_array($permissions['roles.edit'], $role_permissions)) ? 'checked' : '' }}>
+
+                                                                <span class="form-check-label">Edit </span>
+
+                                                            </label>
+
+                                                        </div>
+
+                                                        <div class="col-md-2">
+
+                                                            <label class="form-check">
+
+                                                                <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['roles.destroy'])) ? $permissions['roles.destroy'] : '' }}" name="permissions[]"
+                                                                {{ (isset($permissions['roles.destroy']) && in_array($permissions['roles.destroy'], $role_permissions)) ? 'checked' : '' }}>
+
+                                                                <span class="form-check-label">Delete </span>
+
+                                                            </label>
+
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            {{-- ABHA REGISTER --}}
+                                            <tr>
+                                                <td class="text-muted"><span style="cursor: pointer" onclick="checkAllAfter(this)">ABHA REGISTER</span></td>
+
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <label class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="{{ (isset($permissions['abha.register_patient'])) ? $permissions['abha.register_patient'] : '' }}" name="permissions[]" {{ (isset($permissions['abha.register_patient']) && in_array($permissions['abha.register_patient'], $role_permissions)) ? 'checked' : '' }}>
+
+                                                                <span class="form-check-label">List </span>
                                                             </label>
                                                         </div>
                                                     </div>

@@ -52,15 +52,15 @@ class RoleController extends Controller
                     })
                     ->addColumn('actions', function ($row) {
                         $action_html = '-';
-                      //  if ($row->id > 1) {
+                        if ($row->id > 1) {
                             $action_html = '';
-                            //if (Auth::guard('admin')->user()?->can('roles.edit')) {
+                          //  if (Auth::guard('admin')->user()?->can('roles.edit')) {
                                 $action_html .= '<a href="' . route('roles.edit', encrypt($row->id)) . '" class="btn btn-sm btn-info"><i class="bi bi-pencil"></i></a> ';
                            // }
                           //  if (Auth::guard('admin')->user()?->can('roles.destroy')) {
                                 $action_html .= '<a onclick="deleteRole(\'' . encrypt($row->id) . '\')" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>';
                           //  }
-                      //  }
+                        }
                         return $action_html;
                     })
                     ->rawColumns(['permissions', 'actions'])
